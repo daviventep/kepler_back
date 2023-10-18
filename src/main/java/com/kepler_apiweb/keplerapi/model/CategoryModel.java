@@ -4,6 +4,7 @@ import com.mongodb.DBObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,16 +12,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Document("Question")
+@Document("Category")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class QuestionModel {
-    //    @Id
-    //    private int id;
+public class CategoryModel {
+    @Id
+    private int id;
     private String name;
     private String description;
-    private Date creation_date;
-    private Boolean with_product;
-    private List<DBObject> answers = new ArrayList<>();
+    private List<DBObject> products = new ArrayList<>();
 }
