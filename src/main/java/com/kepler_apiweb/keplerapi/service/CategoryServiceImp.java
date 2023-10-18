@@ -11,11 +11,8 @@ import java.util.List;
 public class CategoryServiceImp implements ICategoryService{
     @Autowired
     ICategoryRepository categoryRepository;
-    @Override
-    public String saveCategory(CategoryModel category) {
-        categoryRepository.save(category);
-        return category.getName() + " category has been created.";
-    }
+
+
     @Override
     public List<CategoryModel> listCategory() {
         return categoryRepository.findAll();
