@@ -12,9 +12,10 @@ public class CategoryServiceImp implements ICategoryService{
     @Autowired
     ICategoryRepository categoryRepository;
 
-
     @Override
     public List<CategoryModel> listCategory() {
         return categoryRepository.findAll();
     }
+
+    
 }
