@@ -82,7 +82,6 @@ public class ProductController {
     @GetMapping("/category/{id}")
     public ResponseEntity<List<ProductWithCategoryDTO>> showProductByCategory(@PathVariable String id) {
         List<ProductModel> products = productService.getProductsByCategory(id);
-        System.out.println(products);
         List<ProductWithCategoryDTO> productDTOs = mapProductModelToDTOList(products);
         return new ResponseEntity<>(productDTOs, HttpStatus.OK);
     }
