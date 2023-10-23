@@ -5,8 +5,8 @@ import java.util.List;
 import com.kepler_apiweb.keplerapi.model.MainAdquisitionModel;
 
 public interface IMainAdquisitionService {
-   List<MainAdquisitionModel> listMainAdquisition(); 
-   MainAdquisitionModel createMainAdquisition(MainAdquisitionModel adquisition);
+   List<MainAdquisitionModel> listMainAdquisition();
+   String saveMainAdquisition(MainAdquisitionModel mainAdquisition);
    MainAdquisitionModel updateMainAdquisition(MainAdquisitionModel adquisition);
 
 }
