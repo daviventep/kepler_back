@@ -1,6 +1,8 @@
 package com.kepler_apiweb.keplerapi.model;
 
 
+import com.kepler_apiweb.keplerapi.model.enums.Profiles;
+import com.mongodb.DBObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,11 +33,6 @@ public class UserModel {
     private Date creation_date;
     private Date birth_date;
     private Boolean is_active;
-    private List<Profiles> profiles = new ArrayList<>();
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Profiles {
-        private String type;
-    }
+    private List<DBObject> profiles = new ArrayList<>();
+
 }

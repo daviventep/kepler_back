@@ -14,9 +14,9 @@ public class CategoryServiceImp implements ICategoryService{
     ICategoryRepository categoryRepository;
 
     @Override
-    public String saveCategory(CategoryModel category) {
-        categoryRepository.save(category);
-        return String.format("La categoría %s ha sido creada.", category.getName());
+    public String saveCategory(CategoryModel Category) {
+        categoryRepository.save(Category);
+        return String.format("La categoría %s ha sido creada.", Category.getName());
     }
     @Override
     public List<CategoryModel> listCategory() {
@@ -28,8 +28,8 @@ public class CategoryServiceImp implements ICategoryService{
     }
 
     @Override
-    public String updateCategory(CategoryModel category) {
-        categoryRepository.save(category);
-        return String.format("La categoría %s se ha actualizado de forma exisosa.", category.get_id());
+    public String updateCategory(CategoryModel Category) {
+        categoryRepository.save(Category);
+        return String.format("La categoría %s se ha actualizado de forma exisosa.", Category.get_id());
     }
 }

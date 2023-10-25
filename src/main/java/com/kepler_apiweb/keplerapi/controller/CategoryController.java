@@ -16,14 +16,14 @@ public class CategoryController {
     @Autowired
     ICategoryService categoryService;
 
-    @PostMapping("/")
+    @PostMapping("/insertar")
     public ResponseEntity<String> createCategory(@RequestBody CategoryModel category) {
         categoryService.saveCategory(category);
         return new ResponseEntity<String>(categoryService.saveCategory(category), HttpStatus.OK);
     }
 
-    @GetMapping("/")
-    public ResponseEntity<List<CategoryModel>> showCategory() {
+    @GetMapping("/listar")
+    public ResponseEntity<List<CategoryModel>> ListCategory() {
         return new ResponseEntity<List<CategoryModel>> (categoryService.listCategory(),HttpStatus.OK);
     }
     @GetMapping("/{id}")
