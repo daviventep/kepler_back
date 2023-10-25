@@ -1,6 +1,7 @@
 package com.kepler_apiweb.keplerapi.controller;
 import com.kepler_apiweb.keplerapi.DTO.AdquisitionDetailsDTO;
 import com.kepler_apiweb.keplerapi.DTO.MainAdquisitionCompleteDTO;
+import com.kepler_apiweb.keplerapi.DTO.MainAdquisitionPurchaseDTO;
 import com.kepler_apiweb.keplerapi.DTO.ProductWithCategoryDTO;
 import com.kepler_apiweb.keplerapi.exception.RecursoNoEncontradoException;
 import com.kepler_apiweb.keplerapi.model.CategoryModel;
@@ -18,6 +19,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 @RestController
@@ -79,6 +83,82 @@ public class MainAdquisitionController {
         }
         return new ResponseEntity<String>(returned, HttpStatus.OK);
     }
+    @PostMapping("/buy")
+    public ResponseEntity<String> makePurchase(@RequestBody MainAdquisitionPurchaseDTO adquisitionPurchase) {
+        String return_process;
+        int pointsUsed = 0;
+        double moneyUsed = 0;
+        double totalValuePerDetail = 0;
+        int pointsTotal;
+        boolean usePoints = adquisitionPurchase.getUse_points();
+        int pointsEarnedPer300PointsSpent = 40;
+        int pointsEarnedPer30000MoneySpent = 30;
+        int pointsEarnedForBirthday = 500;
+        if ((adquisitionPurchase.getUse_points() == null) || (adquisitionPurchase.getUser_id().toString().isEmpty())) {
+            throw new RecursoNoEncontradoException("¡Error! Faltó enviar si usar los puntos o el Id del Usuario");
+        }
+        UserModel user = userService.getUserById(adquisitionPurchase.getUser_id().toString()).
+                orElseThrow(() -> new RecursoNoEncontradoException(String.format("¡Error! No se ha encontrado el " +
+                        "usuario con el Id %s", adquisitionPurchase.getUser_id().toString())));
+        List<MainAdquisitionModel> recordsPendienteMainAdquisition =
+                mainAdquisitionService.validateAdquisitionsByUserStatus(adquisitionPurchase.getUser_id().toString(),
+                        "Pendiente");
+        Date dateCurrent = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(dateCurrent);
+        int monthCurrent = calendar.get(Calendar.MONTH) + 1;
+        int dayCurrent = calendar.get(Calendar.DAY_OF_MONTH);
+        Instant birthDayInstant = user.getBirth_date().toInstant();
+        ZonedDateTime zonedDateTime = birthDayInstant.atZone(ZoneOffset.UTC);
+//        calendar.setTime(birthDay);
+        int monthBirthday = zonedDateTime.getMonthValue();
+        int dayBirthday = zonedDateTime.getDayOfMonth();
+        pointsTotal = user.getPoints();
+        // Si ese día cumple años.
+        if ((monthCurrent == monthBirthday) && (dayCurrent == dayBirthday)) {
+            pointsTotal += pointsEarnedForBirthday;
+        }
+
+        if (recordsPendienteMainAdquisition.size() > 0) {
+            if (recordsPendienteMainAdquisition.get(0).getAdquisition_details().size() == 0) {
+                throw new RecursoNoEncontradoException("No has añadido productos para comprar.");
+            }
+            for (MainAdquisitionModel.AdquisitionDetail adquisitionDetail : recordsPendienteMainAdquisition.get(0).getAdquisition_details()) {
+                ProductModel product = productService.getProductById(adquisitionDetail.getProduct_id().toString()).
+                    orElseThrow(() -> new RecursoNoEncontradoException(String.format("¡Error! No se encontró un " +
+                            "producto con el Id %s.", adquisitionDetail.getProduct_id())));
+                int indexDetail =
+                        recordsPendienteMainAdquisition.get(0).getAdquisition_details().indexOf(adquisitionDetail);
+                adquisitionDetail.setMoney_unit_value(product.getMoney_unit_price());
+                adquisitionDetail.setPoint_unit_value(product.getPoint_unit_price());
+                if (usePoints == true) {
+                    totalValuePerDetail = adquisitionDetail.getQuantity() * product.getPoint_unit_price();
+                    if (pointsTotal > 0 && pointsTotal >= totalValuePerDetail) {
+                        pointsTotal -= totalValuePerDetail;
+                        pointsUsed += totalValuePerDetail;
+                    } else {
+                        moneyUsed += adquisitionDetail.getQuantity() * product.getMoney_unit_price();
+                    }
+                } else {
+                    moneyUsed += adquisitionDetail.getQuantity() * product.getMoney_unit_price();
+                }
+                recordsPendienteMainAdquisition.get(0).getAdquisition_details().set(indexDetail, adquisitionDetail);
+            }
+            // Modificar puntos con los que quedó finalmente
+            user.setPoints(pointsTotal);
+            userService.saveUser(user);
+            // Modificar datos del Main_Adquisition
+            recordsPendienteMainAdquisition.get(0).setPoint_total_value(pointsUsed);
+            recordsPendienteMainAdquisition.get(0).setMoney_total_value(moneyUsed);
+            recordsPendienteMainAdquisition.get(0).setStatus("Realizada");
+            // Crear registros de Point_Transaction
+
+            return new ResponseEntity<String>("Working progress..", HttpStatus.OK);
+        } else {
+            throw new RecursoNoEncontradoException("¡Error! No tiene productos pendientes por comprar.");
+        }
+    }
+
 
     public List<MainAdquisitionCompleteDTO> mapMainAdquisitionModelToDTOList(List<MainAdquisitionModel> mainAdquisitions) {
         List<MainAdquisitionCompleteDTO> mainAdquisitionDTOs = new ArrayList<>();
@@ -159,7 +239,7 @@ public class MainAdquisitionController {
         }
     }
     @GetMapping("/user/{id}")
-    public ResponseEntity<List<MainAdquisitionCompleteDTO>> showProductByCategory(@PathVariable String id) {
+    public ResponseEntity<List<MainAdquisitionCompleteDTO>> showMainAdquisitionComplete(@PathVariable String id) {
         List<MainAdquisitionModel> mainAdquisitions = mainAdquisitionService.getMainAdquisitionsByUser(id);
         List<MainAdquisitionCompleteDTO> mainAdquisitionsDTO = mapMainAdquisitionModelToDTOList(mainAdquisitions);
         return new ResponseEntity<>(mainAdquisitionsDTO, HttpStatus.OK);

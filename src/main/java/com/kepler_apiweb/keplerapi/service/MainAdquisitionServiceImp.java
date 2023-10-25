@@ -3,6 +3,7 @@ package com.kepler_apiweb.keplerapi.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.kepler_apiweb.keplerapi.DTO.MainAdquisitionPurchaseDTO;
 import com.kepler_apiweb.keplerapi.model.UserModel;
 import com.kepler_apiweb.keplerapi.repository.IUserRepository;
 import org.bson.types.ObjectId;
@@ -48,6 +49,13 @@ public class MainAdquisitionServiceImp implements IMainAdquisitionService {
     public String addAdquisition(MainAdquisitionModel adquisition) {
         ObjectId objectId = new ObjectId(adquisition.getUser_id().toString());
         return String.format("Holaaa");
+    }
+
+    @Override
+    public String makePurchase(MainAdquisitionPurchaseDTO makeAdquisition) {
+        String return_process;
+        return_process = "REcibido";
+        return return_process;
     }
 
     @Override
