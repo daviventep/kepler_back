@@ -2,7 +2,6 @@ package com.kepler_apiweb.keplerapi.service;
 
 import com.kepler_apiweb.keplerapi.model.PointTransactionModel;
 import com.kepler_apiweb.keplerapi.repository.IPoint_TransactionRepository;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,9 +26,8 @@ public class PointTransactionServiceImp implements IPoint_TransactionService {
     }
     // Filtrar un pointTransaction por Id
     @Override
-    public Optional<PointTransactionModel> getPointTransactionById(String pointTransactionId) {
-        ObjectId objectId = new ObjectId(pointTransactionId);
-        return pointTransactionRepository.findById(objectId);
+    public Optional<PointTransactionModel> getPointTransactionById(int pointTransactionId) {
+        return pointTransactionRepository.findById(pointTransactionId);
     }
     // Actualizar pointTransaction por Id
     @Override

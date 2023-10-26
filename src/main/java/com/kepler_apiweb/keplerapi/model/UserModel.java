@@ -18,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 public class UserModel {
     @Id
-    private String _id;
+    private int _id;
     private int identification;
     private String first_name;
     private String last_name;

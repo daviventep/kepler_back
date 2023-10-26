@@ -12,14 +12,16 @@ public interface IMainAdquisitionService {
    String makePurchase(MainAdquisitionPurchaseDTO makeAdquisition);
 
    List<MainAdquisitionModel> listMainAdquisition();
-   Optional<MainAdquisitionModel> getMainAdquisitionById(String mainAdquisitionId);
-   List<MainAdquisitionModel> getMainAdquisitionsByUser(String userId);
+   Optional<MainAdquisitionModel> getMainAdquisitionById(int mainAdquisitionId);
 
-   List validateAdquisitionsByUserStatus(String userId, String statusType);
+   List validateAdquisitionsByUserStatus(int userId, String statusType);
 
    MainAdquisitionModel updateMainAdquisition(MainAdquisitionModel adquisition);
 
-   String addAdquisition(MainAdquisitionModel mainAdquisition);
+   // Filtrar Main Adquisition por User
+   List<MainAdquisitionModel> getMainAdquisitionsByUser(int userId);
+
+   int getNextId();
 }
 
 

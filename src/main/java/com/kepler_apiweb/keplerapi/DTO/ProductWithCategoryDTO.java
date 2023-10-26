@@ -1,7 +1,8 @@
 package com.kepler_apiweb.keplerapi.DTO;
 
 public class ProductWithCategoryDTO {
-    private String _id;
+    private int
+            _id;
     private String name;
     private Double money_unit_price;
     private Integer point_unit_price;
@@ -11,13 +12,14 @@ public class ProductWithCategoryDTO {
     private String measure_unit;
     private Boolean status;
     private String image_product;
-    private String category_id;
+    private int
+            category_id;
     private String category_name;
 
-    public void set_id(String id) {
+    public void set_id(int id) {
         this._id = id;
     }
-    public String get_id() {
+    public int get_id() {
         return _id;
     }
 
@@ -91,10 +93,10 @@ public class ProductWithCategoryDTO {
         return category_name;
     }
 
-    public void setCategory_id(String categoryId) {
+    public void setCategory_id(int categoryId) {
         this.category_id = categoryId;
     }
-    public String getCategory_id() {
+    public int getCategory_id() {
         return category_id;
     }
 }

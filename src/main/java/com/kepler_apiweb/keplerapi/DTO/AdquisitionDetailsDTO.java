@@ -2,25 +2,25 @@ package com.kepler_apiweb.keplerapi.DTO;
 
 public class AdquisitionDetailsDTO {
 
-    private String
+    private int
             product_id;
     private String
             product_name;
     private Double
             money_unit_value;
-    private int
+    private Integer
             point_unit_value;
     private int
             quantity;
     private String
             description;
 
-    public void setProduct_id(String productId) {
+    public void setProduct_id(int productId) {
         this.product_id =
                 productId;
     }
 
-    public String getProduct_id() {
+    public int getProduct_id() {
         return product_id;
     }
 
@@ -42,12 +42,12 @@ public class AdquisitionDetailsDTO {
         return money_unit_value;
     }
 
-    public void setPoint_unit_value(int pointUnitValue) {
+    public void setPoint_unit_value(Integer pointUnitValue) {
         this.point_unit_value =
                 pointUnitValue;
     }
 
-    public int getPoint_unit_value() {
+    public Integer getPoint_unit_value() {
         return point_unit_value;
     }
 

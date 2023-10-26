@@ -1,7 +1,7 @@
 package com.kepler_apiweb.keplerapi.DTO;
 
 public class PointTransactionDTO {
-    private String
+    private int
             _id;
     private AdquisitionDTO
             adquisition;
@@ -10,12 +10,12 @@ public class PointTransactionDTO {
     private String
             action;
 
-    public void set_id(String id) {
+    public void set_id(int id) {
         this._id =
                 id;
     }
 
-    public String get_id() {
+    public int get_id() {
         return _id;
     }
 

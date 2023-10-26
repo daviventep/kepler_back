@@ -14,7 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 public class ProductModel {
     @Id
-    private String _id;
+    private int _id;
     private String name;
     private Double money_unit_price;
     private Integer point_unit_price;
@@ -24,5 +24,5 @@ public class ProductModel {
     private String measure_unit;
     private Boolean status;
     private String image_product;
-    private ObjectId category_id;
+    private Integer category_id;
 }

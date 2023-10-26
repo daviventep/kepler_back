@@ -25,7 +25,7 @@ public class UserServiceImp implements IUserService {
     }
 
     @Override
-    public Optional<UserModel> getUserById(String userId) {
+    public Optional<UserModel> getUserById(int userId) {
         return userRepository.findById(userId);
     }
 
@@ -52,7 +52,7 @@ public class UserServiceImp implements IUserService {
     }
 
     @Override
-    public String deleteUserById(String userId) {
+    public String deleteUserById(int userId) {
         userRepository.deleteById(userId);  // Cambiado de deleteUserById a deleteById
         return "El usuario con el id: " + userId + " fue eliminado exitosamente";
     }

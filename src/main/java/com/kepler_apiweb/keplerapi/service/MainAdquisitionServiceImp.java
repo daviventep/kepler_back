@@ -6,7 +6,6 @@ import java.util.Optional;
 import com.kepler_apiweb.keplerapi.DTO.MainAdquisitionPurchaseDTO;
 import com.kepler_apiweb.keplerapi.model.UserModel;
 import com.kepler_apiweb.keplerapi.repository.IUserRepository;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,14 +20,13 @@ public class MainAdquisitionServiceImp implements IMainAdquisitionService {
     IUserRepository userRepository;
 
     @Override
-    public List<MainAdquisitionModel> validateAdquisitionsByUserStatus(String userId, String statusType) {
-        ObjectId objectId = new ObjectId(userId);
-        return mainAdquisitionRepository.findByUserIdStatus(objectId, statusType);
+    public List<MainAdquisitionModel> validateAdquisitionsByUserStatus(int userId, String statusType) {
+        return mainAdquisitionRepository.findByUserIdStatus(userId, statusType);
     }
     @Override
     public String saveMainAdquisition(MainAdquisitionModel adquisition) {
         Optional<UserModel>
-                userOptional = userRepository.findById(adquisition.getUser_id().toString());
+                userOptional = userRepository.findById(adquisition.getUser_id());
         if (userOptional.isPresent()) {
             mainAdquisitionRepository.save(adquisition);
             UserModel user = userOptional.get();
@@ -42,19 +40,14 @@ public class MainAdquisitionServiceImp implements IMainAdquisitionService {
             return String.format("Se %s al usuario %s %s.",
                     quantityProducts, user.getFirst_name(), user.getLast_name());
         } else {
-            return String.format("¡Error! No se encontró el usuario con el Id %s", adquisition.getUser_id().toString());
+            return String.format("¡Error! No se encontró el usuario con el Id %s", adquisition.getUser_id());
         }
-    }
-    @Override
-    public String addAdquisition(MainAdquisitionModel adquisition) {
-        ObjectId objectId = new ObjectId(adquisition.getUser_id().toString());
-        return String.format("Holaaa");
     }
 
     @Override
     public String makePurchase(MainAdquisitionPurchaseDTO makeAdquisition) {
         String return_process;
-        return_process = "REcibido";
+        return_process = "Recibido";
         return return_process;
     }
 
@@ -64,14 +57,25 @@ public class MainAdquisitionServiceImp implements IMainAdquisitionService {
     }
     // Filtrar un Main Adquisition por Id
     @Override
-    public Optional<MainAdquisitionModel> getMainAdquisitionById(String mainAdquisitionId) {
+    public Optional<MainAdquisitionModel> getMainAdquisitionById(int mainAdquisitionId) {
         return mainAdquisitionRepository.findById(mainAdquisitionId);
     }
     // Filtrar Main Adquisition por User
     @Override
-    public List<MainAdquisitionModel> getMainAdquisitionsByUser(String userId) {
-        ObjectId objectId = new ObjectId(userId);
-        return mainAdquisitionRepository.findByUserId(objectId);
+    public List<MainAdquisitionModel> getMainAdquisitionsByUser(int userId) {
+        return mainAdquisitionRepository.findByUserId(userId);
+    }
+    @Override
+    public int getNextId() {
+        int return_num;
+        List<MainAdquisitionModel> listAdquisitions = mainAdquisitionRepository.findLastMainAdquisition();
+        System.out.println(listAdquisitions);
+        if (!listAdquisitions.isEmpty() && listAdquisitions.get(0) != null) {
+            return_num = listAdquisitions.get(0).get_id() + 1;
+        } else {
+            return_num = 1;
+        }
+        return return_num;
     }
 
     public MainAdquisitionModel updateMainAdquisition(MainAdquisitionModel adquisition) {

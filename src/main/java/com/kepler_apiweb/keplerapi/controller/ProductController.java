@@ -1,7 +1,8 @@
 package com.kepler_apiweb.keplerapi.controller;
 
 import com.kepler_apiweb.keplerapi.DTO.ProductWithCategoryDTO;
-import com.kepler_apiweb.keplerapi.exception.RecursoNoEncontradoException;
+import com.kepler_apiweb.keplerapi.exception.ResourceExist;
+import com.kepler_apiweb.keplerapi.exception.ResourceNotFoundException;
 import com.kepler_apiweb.keplerapi.model.CategoryModel;
 import com.kepler_apiweb.keplerapi.model.ProductModel;
 import com.kepler_apiweb.keplerapi.service.ICategoryService;
@@ -24,8 +25,20 @@ public class ProductController {
 
     @PostMapping("/")
     public ResponseEntity<String> createProduct(@RequestBody ProductModel product) {
-        CategoryModel category = categoryService.getCategoryById(product.getCategory_id().toString()).
-                orElseThrow(() -> new RecursoNoEncontradoException(String.format("¡Error! No se encontró la categoría con el Id %s.", product.getCategory_id())));
+        Boolean productExist = productService.getProductById(product.get_id()).isPresent();
+        if (productExist == true) {
+            int nextIdInt = productService.getNextId();
+            throw new ResourceExist(String.format("El producto con iD %d ya existe, puedes usar el iD %d.",
+                    product.get_id(),
+                    nextIdInt));
+        }
+        Boolean categoryNameExist = productService.getProductByName(product.getName()).isPresent();
+        if (categoryNameExist == true) {
+            throw new ResourceExist(String.format("El producto con nombre %s ya existe.",
+                    product.getName()));
+        }
+        CategoryModel category = categoryService.getCategoryById(product.getCategory_id()).
+                orElseThrow(() -> new ResourceNotFoundException(String.format("¡Error! No se encontró la categoría con el Id %s.", product.getCategory_id())));
         productService.saveProduct(product);
         return new ResponseEntity<String>(productService.saveProduct(product), HttpStatus.OK);
     }
@@ -45,9 +58,9 @@ public class ProductController {
             productDTO.setMeasure_unit(product.getMeasure_unit());
             productDTO.setStatus(product.getStatus());
             productDTO.setImage_product(product.getImage_product());
-            productDTO.setCategory_id(product.getCategory_id().toString());
+            productDTO.setCategory_id(product.getCategory_id());
 
-            String categoryId = product.getCategory_id().toString();
+            int categoryId = product.getCategory_id();
             CategoryModel category = categoryService.getCategoryById(categoryId).orElse(null);
 
             if (category != null) {
@@ -66,9 +79,9 @@ public class ProductController {
         return new ResponseEntity<>(productDTOs, HttpStatus.OK);
     }
     @GetMapping("/id/{id}")
-    public ResponseEntity<ProductWithCategoryDTO> filterProductById(@PathVariable String id) {
+    public ResponseEntity<ProductWithCategoryDTO> filterProductById(@PathVariable int id) {
         ProductModel product = productService.getProductById(id).
-                orElseThrow(() -> new RecursoNoEncontradoException(String.format("¡Error! No se encontró el producto con el Id %s.", id)));
+                orElseThrow(() -> new ResourceNotFoundException(String.format("¡Error! No se encontró el producto con el Id %s.", id)));
         List<ProductModel> singleProductList = new ArrayList<>();
         singleProductList.add(product);
         List<ProductWithCategoryDTO> productDTOs = mapProductModelToDTOList(singleProductList);
@@ -76,23 +89,23 @@ public class ProductController {
         if (!productDTOs.isEmpty()) {
             return ResponseEntity.ok(productDTOs.get(0));
         } else {
-            throw new RecursoNoEncontradoException(String.format("¡Error! No se encontró el producto con el Id %s.", id));
+            throw new ResourceNotFoundException(String.format("¡Error! No se encontró el producto con el Id %s.", id));
         }
     }
     @GetMapping("/category/{id}")
-    public ResponseEntity<List<ProductWithCategoryDTO>> showProductByCategory(@PathVariable String id) {
+    public ResponseEntity<List<ProductWithCategoryDTO>> showProductByCategory(@PathVariable int id) {
         List<ProductModel> products = productService.getProductsByCategory(id);
         List<ProductWithCategoryDTO> productDTOs = mapProductModelToDTOList(products);
         return new ResponseEntity<>(productDTOs, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateProductById(@PathVariable String id, @RequestBody ProductModel detailsProduct) {
+    public ResponseEntity<String> updateProductById(@PathVariable int id, @RequestBody ProductModel detailsProduct) {
         ProductModel product = productService.getProductById(id).
-                orElseThrow(() -> new RecursoNoEncontradoException(String.format("¡Error! No se encontró el producto con el Id %s.", id)));
+                orElseThrow(() -> new ResourceNotFoundException(String.format("¡Error! No se encontró el producto con el Id %s.", id)));
         if (detailsProduct.getCategory_id() != null && !detailsProduct.getCategory_id().toString().isEmpty()) {
-            CategoryModel category = categoryService.getCategoryById(product.getCategory_id().toString()).
-                    orElseThrow(() -> new RecursoNoEncontradoException(String.format("¡Error! No se encontró la categoría con el Id %s.", product.getCategory_id())));
+            CategoryModel category = categoryService.getCategoryById(product.getCategory_id()).
+                    orElseThrow(() -> new ResourceNotFoundException(String.format("¡Error! No se encontró la categoría con el Id %s.", product.getCategory_id())));
             product.setCategory_id(detailsProduct.getCategory_id());
         }
         if (detailsProduct.getName() != null && !detailsProduct.getName().isEmpty()) {

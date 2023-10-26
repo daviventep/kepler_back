@@ -1,10 +1,8 @@
 package com.kepler_apiweb.keplerapi.service;
 
-import com.kepler_apiweb.keplerapi.model.CategoryModel;
 import com.kepler_apiweb.keplerapi.model.ProductModel;
 import com.kepler_apiweb.keplerapi.repository.ICategoryRepository;
 import com.kepler_apiweb.keplerapi.repository.IProductRepository;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -30,14 +28,29 @@ public class ProductServiceImp implements IProductService {
     }
     // Filtrar un producto por Id
     @Override
-    public Optional<ProductModel> getProductById(String productId) {
+    public Optional<ProductModel> getProductById(int productId) {
         return productRepository.findById(productId);
     }
     // Filtrar productos por categoría
     @Override
-    public List<ProductModel> getProductsByCategory(String categoryId) {
-        ObjectId objectId = new ObjectId(categoryId);
-        return productRepository.findByCategoryId(objectId);
+    public List<ProductModel> getProductsByCategory(int categoryId) {
+        return productRepository.findByCategoryId(categoryId);
+    }
+    @Override
+    public int getNextId() {
+        int return_num;
+        List<ProductModel> listProducts = productRepository.findLastProduct();
+        System.out.println(listProducts);
+        if (!listProducts.isEmpty() && listProducts.get(0) != null) {
+            return_num = listProducts.get(0).get_id() + 1;
+        } else {
+            return_num = 1;
+        }
+        return return_num;
+    }
+    @Override
+    public Optional<ProductModel> getProductByName(String name) {
+        return Optional.ofNullable(productRepository.findByNameEquals(name));
     }
     // Actualizar producto por Id
     @Override

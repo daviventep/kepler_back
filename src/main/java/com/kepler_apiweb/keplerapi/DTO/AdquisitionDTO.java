@@ -1,9 +1,9 @@
 package com.kepler_apiweb.keplerapi.DTO;
 
 public class AdquisitionDTO {
-    private String
+    private int
             main_adquisition_id;
-    private String
+    private int
             user_id;
     private String
             first_name;
@@ -12,12 +12,12 @@ public class AdquisitionDTO {
     private int
             identification;
 
-    public void setUser_id(String userId) {
+    public void setUser_id(int userId) {
         this.user_id =
                 userId;
     }
 
-    public String getUser_id() {
+    public int getUser_id() {
         return user_id;
     }
 
@@ -48,12 +48,12 @@ public class AdquisitionDTO {
         return identification;
     }
 
-    public void setMain_adquisition_id(String mainAdquisitionId) {
+    public void setMain_adquisition_id(int mainAdquisitionId) {
         this.main_adquisition_id =
                 mainAdquisitionId;
     }
 
-    public String getMain_adquisition_id() {
+    public int getMain_adquisition_id() {
         return main_adquisition_id;
     }
 }

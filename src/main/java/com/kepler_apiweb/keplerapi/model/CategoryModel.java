@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 public class CategoryModel {
     @Id
-    private String _id;
+    private int _id;
     private String name;
     private String description;
 }

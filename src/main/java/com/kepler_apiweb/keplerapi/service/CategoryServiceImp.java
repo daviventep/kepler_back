@@ -23,8 +23,25 @@ public class CategoryServiceImp implements ICategoryService{
         return categoryRepository.findAll();
     }
     @Override
-    public Optional<CategoryModel> getCategoryById(String categoryId) {
+    public Optional<CategoryModel> getCategoryById(int categoryId) {
         return categoryRepository.findById(categoryId);
+    }
+    @Override
+    public Optional<CategoryModel> getCategoryByName(String name) {
+        return Optional.ofNullable(categoryRepository.findByNameEquals(name));
+    }
+
+    @Override
+    public int getNextId() {
+        int return_num;
+        List<CategoryModel> listCategories = categoryRepository.findLastCategory();
+        System.out.println(listCategories);
+        if (!listCategories.isEmpty() && listCategories.get(0) != null) {
+            return_num = listCategories.get(0).get_id() + 1;
+        } else {
+            return_num = 1;
+        }
+        return return_num;
     }
 
     @Override

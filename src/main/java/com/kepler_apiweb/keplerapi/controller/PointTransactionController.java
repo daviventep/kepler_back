@@ -2,8 +2,7 @@ package com.kepler_apiweb.keplerapi.controller;
 
 import com.kepler_apiweb.keplerapi.DTO.AdquisitionDTO;
 import com.kepler_apiweb.keplerapi.DTO.PointTransactionDTO;
-import com.kepler_apiweb.keplerapi.DTO.ProductWithCategoryDTO;
-import com.kepler_apiweb.keplerapi.exception.RecursoNoEncontradoException;
+import com.kepler_apiweb.keplerapi.exception.ResourceNotFoundException;
 import com.kepler_apiweb.keplerapi.model.*;
 import com.kepler_apiweb.keplerapi.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +27,12 @@ public class PointTransactionController {
     @PostMapping("/")
     public ResponseEntity<String> createPointTransaction(@RequestBody PointTransactionModel pointTransaction) {
         PointTransactionModel.Adquisition adquisition = pointTransaction.getAdquisition();
-        UserModel user = userService.getUserById(adquisition.getUser_id().toString()).
-            orElseThrow(() -> new RecursoNoEncontradoException(String.format("¡Error! No se encontró el usuario " +
+        UserModel user = userService.getUserById(adquisition.getUser_id()).
+            orElseThrow(() -> new ResourceNotFoundException(String.format("¡Error! No se encontró el usuario " +
                     "con el Id %s.", adquisition.getUser_id())));
         MainAdquisitionModel mainAdquisition =
-                mainAdquisitionService.getMainAdquisitionById(adquisition.getMain_adquisition_id().toString()).
-            orElseThrow(() -> new RecursoNoEncontradoException(String.format("¡Error! No se encontró la " +
+                mainAdquisitionService.getMainAdquisitionById(adquisition.getMain_adquisition_id()).
+            orElseThrow(() -> new ResourceNotFoundException(String.format("¡Error! No se encontró la " +
                     "Adquisición Principal con el Id %s.", adquisition.getMain_adquisition_id())));
         pointTransaction.getAdquisition().setTransaction_date(new Date());
         String return_string = pointTransactionService.savePointTransaction(pointTransaction);
@@ -45,14 +44,14 @@ public class PointTransactionController {
 
         for (PointTransactionModel pointTransaction : pointTransactions) {
             PointTransactionDTO pointTransactionDTO = new PointTransactionDTO();
-            pointTransactionDTO.set_id(pointTransaction.get_id().toString());
+            pointTransactionDTO.set_id(pointTransaction.get_id());
             pointTransactionDTO.setQuantity_point(pointTransaction.getQuantity_point());
             pointTransactionDTO.setAction(pointTransaction.getAction());
 
             AdquisitionDTO adquisitionDTO = new AdquisitionDTO();
             PointTransactionModel.Adquisition adquisition = pointTransaction.getAdquisition();
 
-            String user_id = adquisition.getUser_id().toString();
+            int user_id = adquisition.getUser_id();
             adquisitionDTO.setUser_id(user_id);
             UserModel user = userService.getUserById(user_id).orElse(null);
             if (user != null) {
@@ -65,7 +64,7 @@ public class PointTransactionController {
                 adquisitionDTO.setIdentification(0);
 
             }
-            adquisitionDTO.setMain_adquisition_id(adquisition.getMain_adquisition_id().toString());
+            adquisitionDTO.setMain_adquisition_id(adquisition.getMain_adquisition_id());
 
             pointTransactionDTO.setAdquisition(adquisitionDTO);
             pointTransactionDTOs.add(pointTransactionDTO);
@@ -80,9 +79,9 @@ public class PointTransactionController {
         return new ResponseEntity<>(pointTransactionDTOs, HttpStatus.OK);
     }
     @GetMapping("/id/{id}")
-    public ResponseEntity<PointTransactionDTO> filterPointTransactionById(@PathVariable String id) {
+    public ResponseEntity<PointTransactionDTO> filterPointTransactionById(@PathVariable int id) {
         PointTransactionModel pointTransaction = pointTransactionService.getPointTransactionById(id).
-                orElseThrow(() -> new RecursoNoEncontradoException(String.format("¡Error! No se encontró la " +
+                orElseThrow(() -> new ResourceNotFoundException(String.format("¡Error! No se encontró la " +
                         "transacción de puntos con el Id %s.", id)));
         List<PointTransactionModel> singlePointTransactionList = new ArrayList<>();
         singlePointTransactionList.add(pointTransaction);
@@ -91,7 +90,7 @@ public class PointTransactionController {
         if (!pointTransactionDTOS.isEmpty()) {
             return ResponseEntity.ok(pointTransactionDTOS.get(0));
         } else {
-            throw new RecursoNoEncontradoException(String.format("¡Error! No se encontró la transacción de puntos con" +
+            throw new ResourceNotFoundException(String.format("¡Error! No se encontró la transacción de puntos con" +
                     " el Id %s.", id));
         }
     }

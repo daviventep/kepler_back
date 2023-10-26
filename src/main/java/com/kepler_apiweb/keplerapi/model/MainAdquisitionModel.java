@@ -17,21 +17,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MainAdquisitionModel {
     @Id
-    private String _id;
+    private int _id;
     private Double money_total_value;
-    private int point_total_value;
+    private Integer point_total_value;
     private Date creation_date;
     private Date delivery_date;
-    private ObjectId user_id;
+    private int user_id;
     private String status;
     private List<AdquisitionDetail> adquisition_details = new ArrayList<>();
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
     public static class AdquisitionDetail {
-        private ObjectId product_id;
+        private int product_id;
         private Double money_unit_value;
-        private int point_unit_value;
+        private Integer point_unit_value;
         private int quantity;
         private String description;
     }

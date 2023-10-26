@@ -4,16 +4,17 @@ import java.util.Date;
 import java.util.List;
 
 public class MainAdquisitionCompleteDTO {
-    private String _id;
+    private int
+            _id;
     private Double
             money_total_value;
-    private int
+    private Integer
             point_total_value;
     private Date
             creation_date;
     private Date
             delivery_date;
-    private String
+    private int
             user_id;
     private String
             first_name;
@@ -26,11 +27,11 @@ public class MainAdquisitionCompleteDTO {
     private List<AdquisitionDetailsDTO>
             adquisition_details;
 
-    public void set_id(String id) {
+    public void set_id(int id) {
         this._id = id;
     }
 
-    public String get_id() {
+    public int get_id() {
         return _id;
     }
 
@@ -43,12 +44,12 @@ public class MainAdquisitionCompleteDTO {
         return money_total_value;
     }
 
-    public void setPoint_total_value(int pointTotalValue) {
+    public void setPoint_total_value(Integer pointTotalValue) {
         this.point_total_value =
                 pointTotalValue;
     }
 
-    public int getPoint_total_value() {
+    public Integer getPoint_total_value() {
         return point_total_value;
     }
 
@@ -70,12 +71,12 @@ public class MainAdquisitionCompleteDTO {
         return delivery_date;
     }
 
-    public void setUser_id(String userId) {
+    public void setUser_id(int userId) {
         this.user_id =
                 userId;
     }
 
-    public String getUser_id() {
+    public int getUser_id() {
         return user_id;
     }
 

@@ -8,6 +8,9 @@ import java.util.Optional;
 public interface ICategoryService {
     String saveCategory(CategoryModel category);
     List<CategoryModel> listCategory();
-    Optional<CategoryModel> getCategoryById(String categoryId);
+    Optional<CategoryModel> getCategoryById(int categoryId);
     String updateCategory(CategoryModel category);
+    int getNextId();
+
+    Optional<CategoryModel> getCategoryByName(String name);
 }

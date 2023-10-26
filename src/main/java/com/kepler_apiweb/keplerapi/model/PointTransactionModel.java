@@ -18,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 public class PointTransactionModel {
     @Id
-    private ObjectId _id;
+    private int _id;
     private int quantity_point;
     private String action;
     private Adquisition adquisition;
@@ -26,8 +26,8 @@ public class PointTransactionModel {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Adquisition {
-        private ObjectId user_id;
-        private ObjectId main_adquisition_id;
+        private int user_id;
+        private int main_adquisition_id;
         private Date transaction_date;
     }
 }

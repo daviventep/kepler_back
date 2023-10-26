@@ -8,7 +8,10 @@ import java.util.Optional;
 public interface IPoint_TransactionService {
     String savePointTransaction(PointTransactionModel pointTransaction);
     List<PointTransactionModel> listPointTransaction();
-    Optional<PointTransactionModel> getPointTransactionById(String pointTransactionId);
+
+    // Filtrar un pointTransaction por Id
+    Optional<PointTransactionModel> getPointTransactionById(int pointTransactionId);
+
     String updatePointTransaction(PointTransactionModel pointTransaction);
 
 }

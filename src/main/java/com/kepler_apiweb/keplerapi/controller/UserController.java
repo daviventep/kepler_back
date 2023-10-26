@@ -1,7 +1,7 @@
 package com.kepler_apiweb.keplerapi.controller;
 
-import com.apiweb.exception.CamposInvalidosException;
-import com.kepler_apiweb.keplerapi.exception.RecursoNoEncontradoException;
+import com.kepler_apiweb.keplerapi.exception.InvalidFieldsException;
+import com.kepler_apiweb.keplerapi.exception.ResourceNotFoundException;
 import com.kepler_apiweb.keplerapi.model.UserModel;
 import com.kepler_apiweb.keplerapi.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,22 +30,22 @@ public class UserController {
     }
 
     @GetMapping("/search/{id}")
-    public ResponseEntity<UserModel> searchUserById(@PathVariable String id) {
+    public ResponseEntity<UserModel> searchUserById(@PathVariable int id) {
         UserModel user = userService.getUserById(id)
-                .orElseThrow(() -> new RecursoNoEncontradoException("Error! no se encontro el usuario con el id " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Error! no se encontro el usuario con el id " + id));
         return ResponseEntity.ok(user);
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteUSerById(@PathVariable String id) {
+    public ResponseEntity<String> deleteUSerById(@PathVariable int id) {
         userService.deleteUserById(id);
         return new ResponseEntity<>("El usuario con el id: " + id + " fue eliminado exitosamente", HttpStatus.OK);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateUserById(@PathVariable String id, @RequestBody UserModel detailsUser) {
+    public ResponseEntity<String> updateUserById(@PathVariable int id, @RequestBody UserModel detailsUser) {
         UserModel user = userService.getUserById(id)
-                .orElseThrow(() -> new RecursoNoEncontradoException("Error! no se encontro el usuario con el id " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Error! no se encontro el usuario con el id " + id));
         String updateFirstName = detailsUser.getFirst_name();
         String updateEmail = detailsUser.getEmail();
         String updatePhone = detailsUser.getPhone_number();
@@ -66,7 +66,7 @@ public class UserController {
             userService.updateUser(user);
             return new ResponseEntity<>("El usuario con el ID: " + id + " fue actualizado exitosamente", HttpStatus.OK);
         } else {
-            throw new CamposInvalidosException("Error! El nombre o el correo no pueden estar vacíos");
+            throw new InvalidFieldsException("Error! El nombre o el correo no pueden estar vacíos");
         }
     }
 }
