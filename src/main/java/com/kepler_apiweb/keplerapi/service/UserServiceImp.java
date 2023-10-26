@@ -36,7 +36,6 @@ public class UserServiceImp implements IUserService {
             UserModel updatedUser = existingUser.get();
             // Actualiza los campos necesarios
             updatedUser.setFirst_name(user.getFirst_name());
-            updatedUser.setLast_name(user.getLast_name());
             updatedUser.setEmail(user.getEmail());
             updatedUser.setPhone_number(user.getPhone_number());
             updatedUser.setAddress(user.getAddress());
