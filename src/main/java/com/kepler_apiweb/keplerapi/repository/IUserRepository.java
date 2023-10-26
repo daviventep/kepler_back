@@ -1,6 +1,5 @@
 package com.kepler_apiweb.keplerapi.repository;
 
-import com.kepler_apiweb.keplerapi.model.CategoryModel;
 import com.kepler_apiweb.keplerapi.model.UserModel;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
