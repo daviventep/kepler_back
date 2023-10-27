@@ -42,19 +42,16 @@ public class UserController {
         UserModel user = userService.getUserById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Error! no se encontró el usuario con el ID " + id));
 
-        Boolean updatedActive = activityUser.getIs_active();
-        if (updatedActive != null) {
-            if (updatedActive) {
-                user.setIs_active(true);
-            } else {
-                user.setIs_active(false);
-            }
+        boolean updatedActive = activityUser.getIs_active();
+        if (updatedActive == true || updatedActive == false) {
+            user.setIs_active(updatedActive);
             userService.deleteUser(user);
-            return new ResponseEntity<>("La actividad del usuario con el ID: " + id + " fue cambiado exitosamente", HttpStatus.OK);
+            return new ResponseEntity<>("El usuario con el ID: " + id + " fue marcado como inactivo exitosamente", HttpStatus.OK);
         } else {
-            throw new CamposInvalidosException("Error! El campo 'is_active' debe ser un valor booleano válido (true o false)");
+            throw new CamposInvalidosException("Error! Los campos no pueden estar vacíos");
         }
     }
+
 
 
 
