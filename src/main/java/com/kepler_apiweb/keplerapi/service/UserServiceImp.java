@@ -1,5 +1,6 @@
 package com.kepler_apiweb.keplerapi.service;
 
+import com.kepler_apiweb.keplerapi.model.QuestionModel;
 import com.kepler_apiweb.keplerapi.model.UserModel;
 import com.kepler_apiweb.keplerapi.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +24,25 @@ public class UserServiceImp implements IUserService {
     public List<UserModel> listUsers() {
         return userRepository.findAll();
     }
+    @Override
+    public int getNextId() {
+        int return_num;
+        List<UserModel> listUsers = userRepository.findLastUser();
+        if (!listUsers.isEmpty() && listUsers.get(0) != null) {
+            return_num = listUsers.get(0).get_id() + 1;
+        } else {
+            return_num = 1;
+        }
+        return return_num;
+    }
 
     @Override
     public Optional<UserModel> getUserById(int userId) {
         return userRepository.findById(userId);
+    }
+    @Override
+    public Optional<UserModel> getUserByIdentification(int identification) {
+        return Optional.ofNullable(userRepository.findByIdentification(identification));
     }
 
     @Override
@@ -52,8 +68,16 @@ public class UserServiceImp implements IUserService {
     }
 
     @Override
-    public String deleteUserById(int userId) {
-        userRepository.deleteById(userId);  // Cambiado de deleteUserById a deleteById
-        return "El usuario con el id: " + userId + " fue eliminado exitosamente";
+    public String deleteUser(UserModel user) {
+        Optional<UserModel> existingUser = userRepository.findById(user.get_id());
+        if (existingUser.isPresent()) {
+            UserModel updatedActivation = existingUser.get();
+            updatedActivation.setIs_active(user.getIs_active());
+            userRepository.save(updatedActivation);  // Cambiado de updateUser a updatedUser
+            return "El usuario con el ID: " + user.get_id() + " fue actualizado exitosamente";
+        } else {
+            return "No se encontró un usuario con el ID: " + user.get_id();
+        }
     }
+
 }

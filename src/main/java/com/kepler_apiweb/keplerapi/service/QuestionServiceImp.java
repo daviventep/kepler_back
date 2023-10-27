@@ -63,8 +63,9 @@ public class QuestionServiceImp implements IQuestionService {
     }
 
     @Override
-    public QuestionModel updateQuestion(String id, QuestionModel updatedQuestion) {
-        return null;
+    public String updateQuestion(int id, QuestionModel updatedQuestion) {
+        questionRepository.save(updatedQuestion);
+        return String.format("La pregunta con iD %d fue actualizada.", id);
     }
 
 

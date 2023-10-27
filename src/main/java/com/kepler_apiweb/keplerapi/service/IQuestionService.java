@@ -12,7 +12,7 @@ public interface IQuestionService {
     Optional<QuestionModel> getQuestionById(int id);
     int getNextId();
 
-    QuestionModel updateQuestion(String id, QuestionModel updatedQuestion);
+    String updateQuestion(int id, QuestionModel updatedQuestion);
 
     Optional<QuestionModel> getQuestionByName(String name);
 }

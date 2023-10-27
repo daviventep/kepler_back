@@ -53,15 +53,11 @@ public class QuestionController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<QuestionModel> updateQuestion(
-            @PathVariable String id,
+    public ResponseEntity<String> updateQuestionById(
+            @PathVariable int id,
             @RequestBody QuestionModel updatedQuestion
     ) {
-        QuestionModel updated = questionService.updateQuestion(id, updatedQuestion);
-        if (updated != null) {
-            return new ResponseEntity<>(updated, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        String updated = questionService.updateQuestion(id, updatedQuestion);
+        return new ResponseEntity<String>(updated, HttpStatus.OK);
     }
 }

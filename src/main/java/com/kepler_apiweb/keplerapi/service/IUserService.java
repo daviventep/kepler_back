@@ -9,6 +9,9 @@ public interface IUserService {
     String saveUser(UserModel user);
     List<UserModel> listUsers();
     Optional<UserModel> getUserById(int userId);
+    int getNextId();
     String updateUser(UserModel user);
-    String deleteUserById(int UserId);
+    String deleteUser(UserModel User);
+
+    Optional<UserModel> getUserByIdentification(int identification);
 }
