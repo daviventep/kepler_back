@@ -35,7 +35,6 @@ public class CategoryServiceImp implements ICategoryService{
     public int getNextId() {
         int return_num;
         List<CategoryModel> listCategories = categoryRepository.findLastCategory();
-        System.out.println(listCategories);
         if (!listCategories.isEmpty() && listCategories.get(0) != null) {
             return_num = listCategories.get(0).get_id() + 1;
         } else {

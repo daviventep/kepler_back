@@ -24,21 +24,20 @@ public class MainAdquisitionServiceImp implements IMainAdquisitionService {
         return mainAdquisitionRepository.findByUserIdStatus(userId, statusType);
     }
     @Override
-    public String saveMainAdquisition(MainAdquisitionModel adquisition) {
+    public String saveMainAdquisition(MainAdquisitionModel adquisition, Boolean creation, Boolean updating) {
         Optional<UserModel>
                 userOptional = userRepository.findById(adquisition.getUser_id());
         if (userOptional.isPresent()) {
             mainAdquisitionRepository.save(adquisition);
             UserModel user = userOptional.get();
-            int quantityDetails = adquisition.getAdquisition_details().size();
-            String quantityProducts;
-            if (quantityDetails > 1) {
-                quantityProducts = "ha almacenado los productos";
-            } else {
-                quantityProducts = "ha almacenado el producto";
+            String textReturn = "han realizado las acciones respectivas";
+            if (creation == true) {
+                textReturn = "ha creado la adquisición";
+            } else if (updating) {
+                textReturn = "ha actualizado la adquisición";
             }
             return String.format("Se %s al usuario %s %s.",
-                    quantityProducts, user.getFirst_name(), user.getLast_name());
+                    textReturn, user.getFirst_name(), user.getLast_name());
         } else {
             return String.format("¡Error! No se encontró el usuario con el Id %s", adquisition.getUser_id());
         }
@@ -66,10 +65,36 @@ public class MainAdquisitionServiceImp implements IMainAdquisitionService {
         return mainAdquisitionRepository.findByUserId(userId);
     }
     @Override
+    public String getMainAdquisitionByIdAndUserId(int id, int user_id) {
+        Boolean existIdAndUserIdAndStatus = mainAdquisitionRepository.findBy_idAndUser_idAndStatus(id, user_id,
+                "Pendiente").isPresent();
+        String return_value;
+        if (existIdAndUserIdAndStatus == true) {
+            return_value = "";
+        } else {
+            Optional<MainAdquisitionModel> existUser_idAndStatus =
+                    mainAdquisitionRepository.findByUser_idAndStatus(user_id, "Pendiente");
+            if (existUser_idAndStatus.isPresent()) {
+                return_value = String.format("¡Error! El usuario con iD %d ya tiene una adquisición pendiente con un " +
+                                "iD distinto a %d.",
+                        user_id, id);
+            } else {
+                if (mainAdquisitionRepository.findById(id).isPresent() == true) {
+                    int nextIdInt = getNextId();
+                    return_value = String.format("La adquisición con iD %d ya existe, puedes usar el iD %d.",
+                            id,
+                            nextIdInt);
+                } else {
+                    return_value = "";
+                }
+            }
+        }
+        return return_value;
+    }
+    @Override
     public int getNextId() {
         int return_num;
         List<MainAdquisitionModel> listAdquisitions = mainAdquisitionRepository.findLastMainAdquisition();
-        System.out.println(listAdquisitions);
         if (!listAdquisitions.isEmpty() && listAdquisitions.get(0) != null) {
             return_num = listAdquisitions.get(0).get_id() + 1;
         } else {

@@ -11,7 +11,7 @@ public interface IPoint_TransactionService {
 
     // Filtrar un pointTransaction por Id
     Optional<PointTransactionModel> getPointTransactionById(int pointTransactionId);
-
+    int getNextId();
     String updatePointTransaction(PointTransactionModel pointTransaction);
 
 }

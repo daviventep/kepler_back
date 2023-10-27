@@ -19,6 +19,9 @@ public class CategoryController {
 
     @PostMapping("/")
     public ResponseEntity<String> createCategory(@RequestBody CategoryModel category) {
+        if (category.get_id() == 0) {
+            throw new ResourceNotFoundException(String.format("¡Error! No se recibió un Id de la categoría."));
+        }
         Boolean categoryExist = categoryService.getCategoryById(category.get_id()).isPresent();
         if (categoryExist == true) {
             int nextIdInt = categoryService.getNextId();

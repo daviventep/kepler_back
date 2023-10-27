@@ -2,6 +2,7 @@ package com.kepler_apiweb.keplerapi.controller;
 
 import com.kepler_apiweb.keplerapi.DTO.AdquisitionDTO;
 import com.kepler_apiweb.keplerapi.DTO.PointTransactionDTO;
+import com.kepler_apiweb.keplerapi.exception.ResourceExist;
 import com.kepler_apiweb.keplerapi.exception.ResourceNotFoundException;
 import com.kepler_apiweb.keplerapi.model.*;
 import com.kepler_apiweb.keplerapi.service.*;
@@ -26,6 +27,18 @@ public class PointTransactionController {
 
     @PostMapping("/")
     public ResponseEntity<String> createPointTransaction(@RequestBody PointTransactionModel pointTransaction) {
+        if (pointTransaction.get_id() == 0) {
+            throw new ResourceNotFoundException(String.format("¡Error! No se recibió un Id de la transacción de " +
+                    "puntos" +
+                    "."));
+        }
+        Boolean pointTransactionExist = pointTransactionService.getPointTransactionById(pointTransaction.get_id()).isPresent();
+        if (pointTransactionExist == true) {
+            int nextIdInt = pointTransactionService.getNextId();
+            throw new ResourceExist(String.format("La transacción de puntos con iD %d ya existe, puedes usar el iD %d.",
+                    pointTransaction.get_id(),
+                    nextIdInt));
+        }
         PointTransactionModel.Adquisition adquisition = pointTransaction.getAdquisition();
         UserModel user = userService.getUserById(adquisition.getUser_id()).
             orElseThrow(() -> new ResourceNotFoundException(String.format("¡Error! No se encontró el usuario " +

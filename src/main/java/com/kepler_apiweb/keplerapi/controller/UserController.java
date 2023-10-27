@@ -20,6 +20,9 @@ public class UserController {
 
     @PostMapping("/")
     public ResponseEntity<String> createUser(@RequestBody UserModel user) {
+        if (user.get_id() == 0) {
+            throw new ResourceNotFoundException(String.format("¡Error! No se recibió un Id del usuario."));
+        }
         return new ResponseEntity<>(userService.saveUser(user), HttpStatus.OK);
     }
 

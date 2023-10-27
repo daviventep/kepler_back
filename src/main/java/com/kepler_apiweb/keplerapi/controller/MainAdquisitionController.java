@@ -2,6 +2,7 @@ package com.kepler_apiweb.keplerapi.controller;
 import com.kepler_apiweb.keplerapi.DTO.AdquisitionDetailsDTO;
 import com.kepler_apiweb.keplerapi.DTO.MainAdquisitionCompleteDTO;
 import com.kepler_apiweb.keplerapi.DTO.MainAdquisitionPurchaseDTO;
+import com.kepler_apiweb.keplerapi.exception.ResourceExist;
 import com.kepler_apiweb.keplerapi.exception.ResourceNotFoundException;
 import com.kepler_apiweb.keplerapi.model.MainAdquisitionModel;
 import com.kepler_apiweb.keplerapi.model.ProductModel;
@@ -33,14 +34,22 @@ public class MainAdquisitionController {
     @PostMapping("/add")
     public ResponseEntity<String> saveMainAdquisition(@RequestBody MainAdquisitionModel mainAdquisition) {
         String returned;
-        if (mainAdquisition.getUser_id() != 0) {
+        if (mainAdquisition.get_id() == 0) {
+            throw new ResourceNotFoundException(String.format("¡Error! No se recibió un Id de la adquisición."));
+        }
+        String hasErrorMainAdquisitionExist =
+                mainAdquisitionService.getMainAdquisitionByIdAndUserId(mainAdquisition.get_id(), mainAdquisition.getUser_id());
+        if (hasErrorMainAdquisitionExist != "") {
+            throw new ResourceExist(hasErrorMainAdquisitionExist);
+        }
+        if (mainAdquisition.getUser_id() == 0) {
             throw new ResourceNotFoundException("¡Error! No se recibió el Id del usuario.");
         }
         UserModel user = userService.getUserById(mainAdquisition.getUser_id()).
                 orElseThrow(() -> new ResourceNotFoundException(String.format("¡Error! No se ha encontrado el usuario" +
                         " con el Id %d", mainAdquisition.getUser_id())));
         for (MainAdquisitionModel.AdquisitionDetail detail : mainAdquisition.getAdquisition_details()) {
-            if (detail.getProduct_id() != 0) {
+            if (detail.getProduct_id() == 0) {
                 throw new ResourceNotFoundException(String.format("¡Error! No se recibió un producto en los " +
                         "detalles de adquisición"));
             }
@@ -73,9 +82,9 @@ public class MainAdquisitionController {
                     recordPendienteMainAdquisition.get(0).getAdquisition_details().add(adquisitionDetail);
                 }
             }
-            returned = mainAdquisitionService.saveMainAdquisition(recordPendienteMainAdquisition.get(0));
+            returned = mainAdquisitionService.saveMainAdquisition(recordPendienteMainAdquisition.get(0), false, true);
         } else {
-            returned = mainAdquisitionService.saveMainAdquisition(mainAdquisition);
+            returned = mainAdquisitionService.saveMainAdquisition(mainAdquisition, false, true);
         }
         return new ResponseEntity<String>(returned, HttpStatus.OK);
     }

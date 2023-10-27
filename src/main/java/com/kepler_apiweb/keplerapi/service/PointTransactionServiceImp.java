@@ -1,5 +1,6 @@
 package com.kepler_apiweb.keplerapi.service;
 
+import com.kepler_apiweb.keplerapi.model.CategoryModel;
 import com.kepler_apiweb.keplerapi.model.PointTransactionModel;
 import com.kepler_apiweb.keplerapi.repository.IPoint_TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,17 @@ public class PointTransactionServiceImp implements IPoint_TransactionService {
     @Override
     public Optional<PointTransactionModel> getPointTransactionById(int pointTransactionId) {
         return pointTransactionRepository.findById(pointTransactionId);
+    }
+    @Override
+    public int getNextId() {
+        int return_num;
+        List<PointTransactionModel> listPointTransactions = pointTransactionRepository.findLastPointTransaction();
+        if (!listPointTransactions.isEmpty() && listPointTransactions.get(0) != null) {
+            return_num = listPointTransactions.get(0).get_id() + 1;
+        } else {
+            return_num = 1;
+        }
+        return return_num;
     }
     // Actualizar pointTransaction por Id
     @Override

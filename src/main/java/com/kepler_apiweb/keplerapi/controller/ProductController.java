@@ -25,6 +25,9 @@ public class ProductController {
 
     @PostMapping("/")
     public ResponseEntity<String> createProduct(@RequestBody ProductModel product) {
+        if (product.get_id() == 0) {
+            throw new ResourceNotFoundException(String.format("¡Error! No se recibió un Id del producto."));
+        }
         Boolean productExist = productService.getProductById(product.get_id()).isPresent();
         if (productExist == true) {
             int nextIdInt = productService.getNextId();
