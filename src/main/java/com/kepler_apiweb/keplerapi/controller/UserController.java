@@ -24,12 +24,16 @@ public class UserController {
         if (user.get_id() == 0) {
             throw new ResourceNotFoundException(String.format("¡Error! No se recibió un Id del usuario."));
         }
+        Boolean userExist = userService.getUserById(user.get_id()).isPresent();
+        if (userExist == true) {
+            int nextIdInt = userService.getNextId();
+            throw new ResourceExist(String.format("El usuario iD %d ya existe, puedes usar el iD %d.",
+                    user.get_id(), nextIdInt));
+        }
         Boolean identificationExist = userService.getUserByIdentification(user.getIdentification()).isPresent();
         if (identificationExist == true) {
-            int nextIdInt = userService.getNextId();
-            throw new ResourceExist(String.format("El usuario con iD %d ya existe, puedes usar el iD %d.",
-                    user.get_id(),
-                    nextIdInt));
+            throw new ResourceExist(String.format("El usuario con identificación %d ya existe.",
+                    user.getIdentification()));
         }
         return new ResponseEntity<>(userService.saveUser(user), HttpStatus.OK);
     }
@@ -62,7 +66,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<String> updateUserById(@PathVariable int id, @RequestBody UserModel detailsUser) {
         UserModel user = userService.getUserById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Error! no se encontro el usuario con el id " + id));
