@@ -33,6 +33,13 @@ public class UserModel {
     private Date creation_date;
     private Date birth_date;
     private Boolean is_active;
-    private List<DBObject> profiles = new ArrayList<>();
+    private List<Profiles> profiles = new ArrayList<>();
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Profiles {
+        private String type;
+    }
 
 }
