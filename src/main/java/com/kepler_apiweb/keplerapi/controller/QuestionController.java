@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -34,6 +36,8 @@ public class QuestionController {
             throw new ResourceExist(String.format("La pregunta con nombre %s ya existe.",
                     question.getName()));
         }
+        question.setCreation_date(new Date());
+        question.setAnswers(new ArrayList<>());
         String createdQuestion = questionService.createQuestion(question);
         return new ResponseEntity<>(createdQuestion, HttpStatus.CREATED);
     }

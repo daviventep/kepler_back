@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping("/kepler/users")
+@RequestMapping("/kepler/user")
 public class UserController {
     @Autowired
     IUserService userService;
@@ -40,7 +40,7 @@ public class UserController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @GetMapping("/search/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<UserModel> searchUserById(@PathVariable int id) {
         UserModel user = userService.getUserById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Error! no se encontro el usuario con el id " + id));
