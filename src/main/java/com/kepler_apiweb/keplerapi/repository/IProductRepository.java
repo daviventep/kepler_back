@@ -14,4 +14,38 @@ public interface IProductRepository extends MongoRepository<ProductModel, Intege
     @Query(value = "{}", sort = "{'_id' : -1}", fields = "{'_id': 1}")
     List<ProductModel> findLastProduct();
     ProductModel findByNameEquals(String name);
+
+//    @Query("" +
+//            "    " +
+//            "        $lookup: {" +
+//            "            from: 'Category'," +
+//            "            localField: 'category_id'," +
+//            "            foreignField: '_id'," +
+//            "            as: 'category'" +
+//            "        }" +
+//            "    }," +
+//            "    {" +
+//            "        $project: {" +
+//            "            _id: 1," +
+//            "            name: 1," +
+//            "            money_unit_price: 1," +
+//            "            point_unit_price: 1," +
+//            "            description: 0," +
+//            "            quantity: 1," +
+//            "            weight: 1," +
+//            "            measure_unit: 1," +
+//            "            status: 1," +
+//            "            image_product: 1," +
+//            "            category_id: 1," +
+//            "            category_name: '$category.name'  // Aquí se obtiene 'category.name'" +
+//            "        }" +
+//            "    }," +
+//            "    {" +
+//            "        $unwind: {" +
+//            "            path: '$category'," +
+//            "            preserveNullAndEmptyArrays: true" +
+//            "        }" +
+//            "    }" +
+//            "]")
+//    List<ProductModel> findProductsWithCategoryName();
 }

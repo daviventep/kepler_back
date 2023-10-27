@@ -1,12 +1,13 @@
 package com.kepler_apiweb.keplerapi.repository;
 
-import com.kepler_apiweb.keplerapi.model.PointTransactionModel;
+import com.kepler_apiweb.keplerapi.model.QuestionModel;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 import java.util.List;
 
-public interface IPoint_TransactionRepository extends MongoRepository<PointTransactionModel, Integer> {
+public interface IQuestionRepository extends MongoRepository<QuestionModel, Integer> {
     @Query(value = "{}", sort = "{'_id' : -1}", fields = "{'_id': 1}")
-    List<PointTransactionModel> findLastPointTransaction();
+    List<QuestionModel> findLastQuestion();
+    QuestionModel findByNameEquals(String name);
 }

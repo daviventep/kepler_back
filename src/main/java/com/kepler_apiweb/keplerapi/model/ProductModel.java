@@ -17,12 +17,12 @@ public class ProductModel {
     private int _id;
     private String name;
     private Double money_unit_price;
-    private Integer point_unit_price;
+    private int point_unit_price;
     private String description;
-    private Integer quantity;
+    private int quantity;
     private Double weight;
     private String measure_unit;
     private Boolean status;
     private String image_product;
-    private Integer category_id;
+    private int category_id;
 }
