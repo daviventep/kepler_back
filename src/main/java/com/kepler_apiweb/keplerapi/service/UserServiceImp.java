@@ -36,6 +36,7 @@ public class UserServiceImp implements IUserService {
             UserModel updatedUser = existingUser.get();
             // Actualiza los campos necesarios
             updatedUser.setFirst_name(user.getFirst_name());
+            updatedUser.setLast_name(user.getLast_name());
             updatedUser.setEmail(user.getEmail());
             updatedUser.setPhone_number(user.getPhone_number());
             updatedUser.setAddress(user.getAddress());
@@ -43,7 +44,6 @@ public class UserServiceImp implements IUserService {
             updatedUser.setSalary(user.getSalary());
             updatedUser.setPassword(user.getPassword());
             updatedUser.setBirth_date(user.getBirth_date());
-
             userRepository.save(updatedUser);  // Cambiado de updateUser a updatedUser
             return "El usuario con el ID: " + user.get_id() + " fue actualizado exitosamente";
         } else {

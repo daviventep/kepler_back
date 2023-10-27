@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -36,37 +37,58 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteUSerById(@PathVariable String id) {
-        userService.deleteUserById(id);
-        return new ResponseEntity<>("El usuario con el id: " + id + " fue eliminado exitosamente", HttpStatus.OK);
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<String> deleteUserById(@PathVariable String id, @RequestBody UserModel activityUser) {
+        UserModel user = userService.getUserById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Error! no se encontro el usuario con el id " + id));
+
+        boolean updatedActive = activityUser.getIs_active();
+
+        if (user.getIs_active() != updatedActive) {
+            user.setIs_active(updatedActive);
+            userService.updateUser(user);
+            return new ResponseEntity<>("El usuario con el ID: " + id + " fue marcado como inactivo exitosamente", HttpStatus.OK);
+        } else {
+            throw new CamposInvalidosException("Error! El estado de activación no ha cambiado");
+        }
     }
+
 
     @PutMapping("/update/{id}")
     public ResponseEntity<String> updateUserById(@PathVariable String id, @RequestBody UserModel detailsUser) {
         UserModel user = userService.getUserById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Error! no se encontro el usuario con el id " + id));
         String updateFirstName = detailsUser.getFirst_name();
+        String updateLastName = detailsUser.getLast_name();
         String updateEmail = detailsUser.getEmail();
         String updatePhone = detailsUser.getPhone_number();
         String updateAdress = detailsUser.getAddress();
         int updatePoints = detailsUser.getPoints();
         double updateSalary = detailsUser.getSalary();
         String updatePasswd = detailsUser.getPassword();
-        Date updateBirth_Date = detailsUser.getBirth_date();
-        if (updateFirstName != null && !updateFirstName.isEmpty() && updateEmail != null && !updateEmail.isEmpty()) {
+        Date update_BirthDate = detailsUser.getBirth_date();
+        if (updateFirstName != null && !updateFirstName.isEmpty() &&
+                updateLastName != null && !updateLastName.isEmpty() &&
+                updateEmail != null && !updateEmail.isEmpty() &&
+                updatePhone !=null && !updatePhone.isEmpty() &&
+                updateAdress != null && !updateAdress.isEmpty() &&
+                updatePoints >= 0 &&
+                updateSalary >= 0 &&
+                updatePasswd !=null && !updatePasswd.isEmpty() &&
+                update_BirthDate != null) {
             user.setFirst_name(updateFirstName);
+            user.setLast_name(updateLastName);
             user.setEmail(updateEmail);
             user.setPhone_number(updatePhone);
             user.setAddress(updateAdress);
             user.setPoints(updatePoints);
             user.setSalary(updateSalary);
             user.setPassword(updatePasswd);
-            user.setBirth_date(updateBirth_Date);
+            user.setBirth_date(update_BirthDate);
             userService.updateUser(user);
             return new ResponseEntity<>("El usuario con el ID: " + id + " fue actualizado exitosamente", HttpStatus.OK);
         } else {
-            throw new CamposInvalidosException("Error! El nombre o el correo no pueden estar vacíos");
+            throw new CamposInvalidosException("Error! Los campos no pueden estar vacíos");
         }
     }
 }
