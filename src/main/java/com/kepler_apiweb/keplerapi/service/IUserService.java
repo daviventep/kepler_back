@@ -11,5 +11,5 @@ public interface IUserService {
     List<UserModel> listUsers();
     Optional<UserModel> getUserById(String userId);
     String updateUser(UserModel user);
-    String deleteUserById(String UserId);
+    String deleteUser(UserModel User);
 }

@@ -38,20 +38,24 @@ public class UserController {
     }
 
     @PutMapping("/delete/{id}")
-    public ResponseEntity<String> deleteUserById(@PathVariable String id, @RequestBody UserModel activityUser) {
+    public ResponseEntity<String> deleteUSerById(@PathVariable String id, @RequestBody UserModel activityUser) {
         UserModel user = userService.getUserById(id)
-                .orElseThrow(() -> new RecursoNoEncontradoException("Error! no se encontro el usuario con el id " + id));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Error! no se encontró el usuario con el ID " + id));
 
-        boolean updatedActive = activityUser.getIs_active();
-
-        if (user.getIs_active() != updatedActive) {
-            user.setIs_active(updatedActive);
-            userService.updateUser(user);
-            return new ResponseEntity<>("El usuario con el ID: " + id + " fue marcado como inactivo exitosamente", HttpStatus.OK);
+        Boolean updatedActive = activityUser.getIs_active();
+        if (updatedActive != null) {
+            if (updatedActive) {
+                user.setIs_active(true);
+            } else {
+                user.setIs_active(false);
+            }
+            userService.deleteUser(user);
+            return new ResponseEntity<>("La actividad del usuario con el ID: " + id + " fue cambiado exitosamente", HttpStatus.OK);
         } else {
-            throw new CamposInvalidosException("Error! El estado de activación no ha cambiado");
+            throw new CamposInvalidosException("Error! El campo 'is_active' debe ser un valor booleano válido (true o false)");
         }
     }
+
 
 
     @PutMapping("/update/{id}")

@@ -52,8 +52,15 @@ public class UserServiceImp implements IUserService {
     }
 
     @Override
-    public String deleteUserById(String userId) {
-        userRepository.deleteById(userId);  // Cambiado de deleteUserById a deleteById
-        return "El usuario con el id: " + userId + " fue eliminado exitosamente";
+    public String deleteUser(UserModel user) {
+        Optional<UserModel> existingUser = userRepository.findById(user.get_id());
+        if (existingUser.isPresent()) {
+            UserModel updatedActivation = existingUser.get();
+            updatedActivation.setIs_active(user.getIs_active());
+            userRepository.save(updatedActivation);  // Cambiado de updateUser a updatedUser
+            return "El usuario con el ID: " + user.get_id() + " fue actualizado exitosamente";
+        } else {
+            return "No se encontró un usuario con el ID: " + user.get_id();
+        }
     }
 }
