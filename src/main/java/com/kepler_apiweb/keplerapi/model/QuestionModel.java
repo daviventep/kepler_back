@@ -15,7 +15,7 @@ import java.util.List;
 @Document("Question")
 public class QuestionModel {
     @Id
-    private int id;
+    private int _id;
     private String name;
     private String description;
     private Date creation_date;

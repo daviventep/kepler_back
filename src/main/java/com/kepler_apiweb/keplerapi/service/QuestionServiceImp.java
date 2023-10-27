@@ -1,6 +1,8 @@
 package com.kepler_apiweb.keplerapi.service;
 
 import com.kepler_apiweb.keplerapi.DTO.ProductWithCategoryDTO;
+import com.kepler_apiweb.keplerapi.exception.ResourceExist;
+import com.kepler_apiweb.keplerapi.exception.ResourceNotFoundException;
 import com.kepler_apiweb.keplerapi.model.ProductModel;
 import com.kepler_apiweb.keplerapi.model.QuestionModel;
 import com.kepler_apiweb.keplerapi.repository.ICategoryRepository;
@@ -29,22 +31,31 @@ public class QuestionServiceImp implements IQuestionService {
             mongoTemplate;
 
     @Override
+    public String createQuestion(QuestionModel question) {
+        questionRepository.save(question);
+        return String.format("La pregunta %s ha sido creada.", question.getName());
+    }
+
+    @Override
     public List<QuestionModel> getAllQuestions() {
         return questionRepository.findAll();
     }
 
     @Override
-    public QuestionModel getQuestionById(String id) {
-        return null;
+    public Optional<QuestionModel> getQuestionById(int id) {
+        return questionRepository.findById(id);
+    }
+    @Override
+    public Optional<QuestionModel> getQuestionByName(String name) {
+        return Optional.ofNullable(questionRepository.findByNameEquals(name));
     }
 
     @Override
     public int getNextId() {
         int return_num;
-        List<ProductModel> listProducts = productRepository.findLastProduct();
-        System.out.println(listProducts);
-        if (!listProducts.isEmpty() && listProducts.get(0) != null) {
-            return_num = listProducts.get(0).get_id() + 1;
+        List<QuestionModel> listQuestions = questionRepository.findLastQuestion();
+        if (!listQuestions.isEmpty() && listQuestions.get(0) != null) {
+            return_num = listQuestions.get(0).get_id() + 1;
         } else {
             return_num = 1;
         }
@@ -52,19 +63,10 @@ public class QuestionServiceImp implements IQuestionService {
     }
 
     @Override
-    public QuestionModel createQuestion(QuestionModel question) {
-        return null;
-    }
-
-    @Override
     public QuestionModel updateQuestion(String id, QuestionModel updatedQuestion) {
         return null;
     }
 
-    @Override
-    public boolean deleteQuestion(String id) {
-        return false;
-    }
 
 
 }

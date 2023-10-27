@@ -3,14 +3,16 @@ package com.kepler_apiweb.keplerapi.service;
 import com.kepler_apiweb.keplerapi.model.QuestionModel;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IQuestionService {
+    String createQuestion(QuestionModel question);
+
     List<QuestionModel> getAllQuestions();
-    QuestionModel getQuestionById(String id);
+    Optional<QuestionModel> getQuestionById(int id);
     int getNextId();
-    QuestionModel createQuestion(QuestionModel question);
 
     QuestionModel updateQuestion(String id, QuestionModel updatedQuestion);
 
-    boolean deleteQuestion(String id);
+    Optional<QuestionModel> getQuestionByName(String name);
 }
