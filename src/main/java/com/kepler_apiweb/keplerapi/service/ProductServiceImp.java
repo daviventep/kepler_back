@@ -1,5 +1,6 @@
 package com.kepler_apiweb.keplerapi.service;
 
+import com.kepler_apiweb.keplerapi.DTO.ProductToStockDTO;
 import com.kepler_apiweb.keplerapi.DTO.ProductWithCategoryDTO;
 import com.kepler_apiweb.keplerapi.model.ProductModel;
 import com.kepler_apiweb.keplerapi.repository.ICategoryRepository;
@@ -67,6 +68,13 @@ public class ProductServiceImp implements IProductService {
         List<ProductWithCategoryDTO> products = listProductTemplate(matchCriterias);
          return products;
     }
+    // SOLUCIÓN A PREGUNTA 3
+    @Override
+    public List<ProductToStockDTO> listProductToStock() {
+        List<ProductToStockDTO> products = productRepository.findProductsToStock();
+         return products;
+    }
+
     // Filtrar un producto por Id
     @Override
     public Optional<ProductModel> getProductById(int productId) {

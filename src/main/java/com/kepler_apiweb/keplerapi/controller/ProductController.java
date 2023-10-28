@@ -1,5 +1,6 @@
 package com.kepler_apiweb.keplerapi.controller;
 
+import com.kepler_apiweb.keplerapi.DTO.ProductToStockDTO;
 import com.kepler_apiweb.keplerapi.DTO.ProductWithCategoryDTO;
 import com.kepler_apiweb.keplerapi.exception.ResourceExist;
 import com.kepler_apiweb.keplerapi.exception.ResourceNotFoundException;
@@ -50,6 +51,13 @@ public class ProductController {
         List<ProductWithCategoryDTO> products = productService.listProduct();
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
+    // SOLUCIÓN A PREGUNTA 3
+    @GetMapping("/stock")
+    public ResponseEntity<List<ProductToStockDTO>> showProductToStock() {
+        List<ProductToStockDTO> products = productService.listProductToStock();
+        return new ResponseEntity<>(products, HttpStatus.OK);
+    }
+
     @GetMapping("/id/{id}")
     public ResponseEntity<ProductWithCategoryDTO> filterProductByIdMap(@PathVariable int id) {
         ProductWithCategoryDTO product = productService.getProductByIdMap(id).
@@ -59,8 +67,6 @@ public class ProductController {
     @GetMapping("/category/{id}")
     public ResponseEntity<List<ProductWithCategoryDTO>> showProductByCategory(@PathVariable int id) {
         List<ProductWithCategoryDTO> products = productService.getProductsByCategory(id);
-//        List<ProductWithCategoryDTO> productDTOs = mapProductModelToDTOList(products);
-//        return new ResponseEntity<>(productDTOs, HttpStatus.OK);
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 

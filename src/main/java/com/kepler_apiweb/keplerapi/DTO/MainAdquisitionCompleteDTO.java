@@ -3,6 +3,7 @@ package com.kepler_apiweb.keplerapi.DTO;
 import java.util.Date;
 import java.util.List;
 
+// SOLUCIÓN A PREGUNTA 1 y 2 PARA EL MUESTREO DE DATOS
 public class MainAdquisitionCompleteDTO {
     private int
             _id;

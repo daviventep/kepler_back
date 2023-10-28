@@ -114,7 +114,9 @@ public class MainAdquisitionServiceImp implements IMainAdquisitionService {
 
     // SOLUCIÓN A PREGUNTA 1
     public List<MainAdquisitionCompleteDTO> findSalesByUserAndOrderByDate(int userId) {
-        return mainAdquisitionRepository.findSalesByUserIdOrderByDate(userId, "Realizada");
+        // Entendemos que por "Funcionario" se refiere a los empleados, pues nosotros manejamos 3 tipos de usuarios,
+        // ["client", "employee", "administrator"]
+        return mainAdquisitionRepository.findSalesByUserIdOrderByDate(userId, "Realizada", "employee");
     }
     // SOLUCIÓN A PREGUNTA 2
     @Override
