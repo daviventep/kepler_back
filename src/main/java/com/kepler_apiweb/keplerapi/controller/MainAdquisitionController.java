@@ -53,6 +53,9 @@ public class MainAdquisitionController {
                 throw new ResourceNotFoundException(String.format("¡Error! No se recibió un producto en los " +
                         "detalles de adquisición"));
             }
+            if (detail.getQuantity() == 0) {
+                throw new IllegalArgumentException("¡Error! La cantidad (quantity) no puede ser cero para el producto " + detail.getProduct_id());
+            }
             ProductModel product = productService.getProductById(detail.getProduct_id()).
                     orElseThrow(() -> new ResourceNotFoundException(String.format("¡Error! No se ha encontrado el " +
                             "producto con el Id %d", detail.getProduct_id())));
@@ -220,10 +223,9 @@ public class MainAdquisitionController {
         return mainAdquisitionDTOs;
     }
     @GetMapping("/")
-    public ResponseEntity<List<MainAdquisitionCompleteDTO>> showAdquisition() {
+    public ResponseEntity<List<MainAdquisitionModel>> showAdquisition() {
         List<MainAdquisitionModel> mainAdquisitions = mainAdquisitionService.listMainAdquisition();
-        List<MainAdquisitionCompleteDTO> mainAdquisitionsDTOs = mapMainAdquisitionModelToDTOList(mainAdquisitions);
-        return new ResponseEntity<> (mainAdquisitionsDTOs, HttpStatus.OK);
+        return new ResponseEntity<> (mainAdquisitions, HttpStatus.OK);
     }
     @GetMapping("/id/{id}")
     public ResponseEntity<MainAdquisitionCompleteDTO> filterMainAdquisitionById(@PathVariable int id) {
@@ -248,5 +250,18 @@ public class MainAdquisitionController {
         List<MainAdquisitionModel> mainAdquisitions = mainAdquisitionService.getMainAdquisitionsByUser(id);
         List<MainAdquisitionCompleteDTO> mainAdquisitionsDTO = mapMainAdquisitionModelToDTOList(mainAdquisitions);
         return new ResponseEntity<>(mainAdquisitionsDTO, HttpStatus.OK);
+    }
+
+    // SOLUCIÓN A PREGUNTA 1
+    @GetMapping("/sales/{userId}")
+    public ResponseEntity<List<MainAdquisitionCompleteDTO>> getSalesByUser(@PathVariable int userId) {
+        List<MainAdquisitionCompleteDTO> sales = mainAdquisitionService.findSalesByUserAndOrderByDate(userId);
+        return new ResponseEntity<>(sales, HttpStatus.OK);
+    }
+    // SOLUCIÓN A PREGUNTA 2
+    @GetMapping("/day/{date}")
+    public ResponseEntity<List<MainAdquisitionCompleteDTO>> showMainAdquisitionDay (@PathVariable String date) {
+        List<MainAdquisitionCompleteDTO> mainAdquisitions = mainAdquisitionService.listMainAdquisitionDay(date);
+        return new ResponseEntity<>(mainAdquisitions, HttpStatus.OK);
     }
 }
