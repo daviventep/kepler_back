@@ -107,43 +107,4 @@ public class PointTransactionController {
                     " el Id %s.", id));
         }
     }
-//
-//    @PutMapping("/{id}")
-//    public ResponseEntity<String> updateProductById(@PathVariable String id, @RequestBody ProductModel detailsProduct) {
-//        ProductModel product = productService.getProductById(id).
-//                orElseThrow(() -> new RecursoNoEncontradoException(String.format("¡Error! No se encontró el producto con el Id %s.", id)));
-//        if (detailsProduct.getCategory_id() != null && !detailsProduct.getCategory_id().toString().isEmpty()) {
-//            CategoryModel category = categoryService.getCategoryById(product.getCategory_id().toString()).
-//                    orElseThrow(() -> new RecursoNoEncontradoException(String.format("¡Error! No se encontró la categoría con el Id %s.", product.getCategory_id())));
-//            product.setCategory_id(detailsProduct.getCategory_id());
-//        }
-//        if (detailsProduct.getName() != null && !detailsProduct.getName().isEmpty()) {
-//            product.setName(detailsProduct.getName());
-//        }
-//        if (detailsProduct.getMoney_unit_price() != null) {
-//            product.setMoney_unit_price(detailsProduct.getMoney_unit_price());
-//        }
-//        if (detailsProduct.getPoint_unit_price() != null) {
-//            product.setPoint_unit_price(detailsProduct.getPoint_unit_price());
-//        }
-//        if (detailsProduct.getDescription() != null && !detailsProduct.getDescription().isEmpty()) {
-//            product.setDescription(detailsProduct.getDescription());
-//        }
-//        if (detailsProduct.getQuantity() != null) {
-//            product.setQuantity(detailsProduct.getQuantity());
-//        }
-//        if (detailsProduct.getWeight() != null) {
-//            product.setWeight(detailsProduct.getWeight());
-//        }
-//        if (detailsProduct.getMeasure_unit() != null && !detailsProduct.getMeasure_unit().isEmpty()) {
-//            product.setMeasure_unit(detailsProduct.getMeasure_unit());
-//        }
-//        if (detailsProduct.getStatus() != null) {
-//            product.setStatus(detailsProduct.getStatus());
-//        }
-//        if (detailsProduct.getImage_product() != null && !detailsProduct.getImage_product().isEmpty()) {
-//            product.setImage_product(detailsProduct.getImage_product());
-//        }
-//        return new ResponseEntity<String>(productService.updateProduct(product), HttpStatus.OK);
-//    }
 }

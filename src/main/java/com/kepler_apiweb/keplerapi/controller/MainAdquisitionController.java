@@ -1,6 +1,7 @@
 package com.kepler_apiweb.keplerapi.controller;
 import com.kepler_apiweb.keplerapi.DTO.AdquisitionDetailsDTO;
 import com.kepler_apiweb.keplerapi.DTO.MainAdquisitionCompleteDTO;
+import com.kepler_apiweb.keplerapi.DTO.MainAdquisitionDeliveryDTO;
 import com.kepler_apiweb.keplerapi.DTO.MainAdquisitionPurchaseDTO;
 import com.kepler_apiweb.keplerapi.exception.ResourceExist;
 import com.kepler_apiweb.keplerapi.exception.ResourceNotFoundException;
@@ -243,6 +244,23 @@ public class MainAdquisitionController {
         }
     }
 
+    @PostMapping("/delivery")
+    public ResponseEntity<String> saveDeliveryStatus(@RequestBody MainAdquisitionDeliveryDTO deliveryBody) {
+        MainAdquisitionModel mainAdquisition =
+                mainAdquisitionService.getMainAdquisitionById(deliveryBody.get_id()).
+                orElseThrow(() -> new ResourceNotFoundException(String.format("¡Error! No se ha encontrado la " +
+                        "adquisición con el Id %d.", deliveryBody.get_id())));
+        System.out.println(mainAdquisition.getStatus());
+        if (!mainAdquisition.getStatus().equals("Realizada")) {
+            throw new ResourceExist(String.format("La adquisición con iD %d no está en un estado disponible (%s).",
+                    deliveryBody.get_id(), mainAdquisition.getStatus()));
+        }
+        mainAdquisition.setStatus("Entregado");
+        mainAdquisition.setDelivery_date(new Date());
+        String return_text = mainAdquisitionService.updateStatus(mainAdquisition);
+
+        return new ResponseEntity<String>(return_text, HttpStatus.OK);
+    }
 
     public List<MainAdquisitionCompleteDTO> mapMainAdquisitionModelToDTOList(List<MainAdquisitionModel> mainAdquisitions) {
         List<MainAdquisitionCompleteDTO> mainAdquisitionDTOs = new ArrayList<>();

@@ -10,10 +10,9 @@ import com.kepler_apiweb.keplerapi.model.MainAdquisitionModel;
 public interface IMainAdquisitionService {
    String saveMainAdquisition(MainAdquisitionModel adquisition, Boolean creation, Boolean updating);
 
-   String makePurchase(MainAdquisitionPurchaseDTO makeAdquisition);
+//   String makePurchase(MainAdquisitionPurchaseDTO makeAdquisition);
 
    List<MainAdquisitionModel> listMainAdquisition();
-//   List<MainAdquisitionCompleteDTO> listMainAdquisition();
    Optional<MainAdquisitionModel> getMainAdquisitionById(int mainAdquisitionId);
 
    List validateAdquisitionsByUserStatus(int userId, String status);
@@ -26,11 +25,13 @@ public interface IMainAdquisitionService {
    int getNextId();
 
    String getMainAdquisitionByIdAndUserId(int id, int userId);
+   String updateStatus(MainAdquisitionModel mainAdquisition);
 
    // SOLUCIÓN A PREGUNTA 1
    List<MainAdquisitionCompleteDTO> findSalesByUserAndOrderByDate(int userId);
    // SOLUCIÓN A PREGUNTA 2
    List<MainAdquisitionCompleteDTO> listMainAdquisitionDay(String date);
+
 }
 
 

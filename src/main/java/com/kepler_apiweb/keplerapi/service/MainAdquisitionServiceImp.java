@@ -56,10 +56,10 @@ public class MainAdquisitionServiceImp implements IMainAdquisitionService {
     }
 
     @Override
-    public String makePurchase(MainAdquisitionPurchaseDTO makeAdquisition) {
-        String return_process;
-        return_process = "Recibido";
-        return return_process;
+    public String updateStatus(MainAdquisitionModel mainAdquisition) {
+        mainAdquisitionRepository.save(mainAdquisition);
+        return String.format("La adquisición con iD %d ha sido entregada con éxito.",
+                mainAdquisition.get_id());
     }
 
 
@@ -195,6 +195,8 @@ public class MainAdquisitionServiceImp implements IMainAdquisitionService {
         }
         return return_value;
     }
+
+
     @Override
     public int getNextId() {
         int return_num;

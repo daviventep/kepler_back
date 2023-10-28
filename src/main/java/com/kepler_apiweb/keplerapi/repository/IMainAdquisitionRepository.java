@@ -3,10 +3,8 @@ package com.kepler_apiweb.keplerapi.repository;
 import com.kepler_apiweb.keplerapi.DTO.MainAdquisitionCompleteDTO;
 import com.kepler_apiweb.keplerapi.model.MainAdquisitionModel;
 
-import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.core.aggregation.LookupOperation;
 import org.springframework.data.mongodb.repository.Query;
 
 import java.util.Date;
