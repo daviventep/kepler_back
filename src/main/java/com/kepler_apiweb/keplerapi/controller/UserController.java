@@ -51,7 +51,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/delete/{id}")
+    @PutMapping("/in_active/{id}")
     public ResponseEntity<String> deleteUSerById(@PathVariable int id, @RequestBody UserModel activityUser) {
         UserModel user = userService.getUserById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Error! no se encontró el usuario con el ID " + id));
@@ -60,7 +60,13 @@ public class UserController {
         if (updatedActive == true || updatedActive == false) {
             user.setIs_active(updatedActive);
             userService.deleteUser(user);
-            return new ResponseEntity<>("El usuario con el ID: " + id + " fue marcado como inactivo exitosamente", HttpStatus.OK);
+            String return_text;
+            if (updatedActive == true) {
+                return_text = String.format("El usuario con el ID %d fue marcado como activo exitosamente.", id);
+            } else {
+                return_text = String.format("El usuario con el ID %d fue marcado como inactivo exitosamente.", id);
+            }
+            return new ResponseEntity<>(return_text, HttpStatus.OK);
         } else {
             throw new InvalidFieldsException("Error! Los campos no pueden estar vacíos");
         }

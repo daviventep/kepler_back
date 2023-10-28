@@ -59,6 +59,10 @@ public class MainAdquisitionController {
             ProductModel product = productService.getProductById(detail.getProduct_id()).
                     orElseThrow(() -> new ResourceNotFoundException(String.format("¡Error! No se ha encontrado el " +
                             "producto con el Id %d", detail.getProduct_id())));
+            if (detail.getQuantity() > product.getQuantity()) {
+                throw new ResourceExist(String.format("La cantidad del producto %s con iD %d es mayor a la que se " +
+                        "tiene en stock (%d).", product.getName(), detail.getProduct_id(), product.getQuantity()));
+            }
         }
         Date creationDate = new Date();
         mainAdquisition.setCreation_date(creationDate);
@@ -78,6 +82,14 @@ public class MainAdquisitionController {
                     MainAdquisitionModel.AdquisitionDetail detailRecord = matchingDetail.get();
                     int indexDetail =
                             recordPendienteMainAdquisition.get(0).getAdquisition_details().indexOf(detailRecord);
+
+                    ProductModel product = productService.getProductById(adquisitionDetail.getProduct_id()).
+                            orElseThrow(() -> new ResourceNotFoundException(String.format("¡Error! No se ha encontrado el " +
+                                    "producto con el Id %d", adquisitionDetail.getProduct_id())));
+                    if (detailRecord.getQuantity() + adquisitionDetail.getQuantity() > product.getQuantity()) {
+                        throw new ResourceExist(String.format("La cantidad del producto %s con iD %d es mayor a la que se " +
+                                "tiene en stock (%d).", product.getName(), adquisitionDetail.getProduct_id(), product.getQuantity()));
+                    }
                     detailRecord.setQuantity(detailRecord.getQuantity() + adquisitionDetail.getQuantity());
 
                     recordPendienteMainAdquisition.get(0).getAdquisition_details().set(indexDetail, detailRecord);
