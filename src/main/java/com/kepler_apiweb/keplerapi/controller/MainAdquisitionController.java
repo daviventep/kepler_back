@@ -5,9 +5,11 @@ import com.kepler_apiweb.keplerapi.DTO.MainAdquisitionPurchaseDTO;
 import com.kepler_apiweb.keplerapi.exception.ResourceExist;
 import com.kepler_apiweb.keplerapi.exception.ResourceNotFoundException;
 import com.kepler_apiweb.keplerapi.model.MainAdquisitionModel;
+import com.kepler_apiweb.keplerapi.model.PointTransactionModel;
 import com.kepler_apiweb.keplerapi.model.ProductModel;
 import com.kepler_apiweb.keplerapi.model.UserModel;
 import com.kepler_apiweb.keplerapi.service.IMainAdquisitionService;
+import com.kepler_apiweb.keplerapi.service.IPoint_TransactionService;
 import com.kepler_apiweb.keplerapi.service.IProductService;
 import com.kepler_apiweb.keplerapi.service.IUserService;
 import org.bson.types.ObjectId;
@@ -16,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.NumberFormat;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -30,6 +33,8 @@ public class MainAdquisitionController {
     IUserService userService;
     @Autowired
     IProductService productService;
+    @Autowired
+    IPoint_TransactionService pointTransactionService;
 
     @PostMapping("/add")
     public ResponseEntity<String> saveMainAdquisition(@RequestBody MainAdquisitionModel mainAdquisition) {
@@ -103,81 +108,140 @@ public class MainAdquisitionController {
         }
         return new ResponseEntity<String>(returned, HttpStatus.OK);
     }
-//    @PostMapping("/buy")
-//    public ResponseEntity<String> makePurchase(@RequestBody MainAdquisitionPurchaseDTO adquisitionPurchase) {
-//        String return_process;
-//        int pointsUsed = 0;
-//        double moneyUsed = 0;
-//        double totalValuePerDetail = 0;
-//        int pointsTotal;
-//        boolean usePoints = adquisitionPurchase.getUse_points();
-//        int pointsEarnedPer300PointsSpent = 40;
-//        int pointsEarnedPer30000MoneySpent = 30;
-//        int pointsEarnedForBirthday = 500;
-//        if ((adquisitionPurchase.getUse_points() == null) || (adquisitionPurchase.getUser_id().toString().isEmpty())) {
-//            throw new ResourceNotFoundException("¡Error! Faltó enviar si usar los puntos o el Id del Usuario");
-//        }
-//        UserModel user = userService.getUserById(adquisitionPurchase.getUser_id()).
-//                orElseThrow(() -> new ResourceNotFoundException(String.format("¡Error! No se ha encontrado el " +
-//                        "usuario con el Id %s", adquisitionPurchase.getUser_id().toString())));
-//        List<MainAdquisitionModel> recordsPendienteMainAdquisition =
-//                mainAdquisitionService.validateAdquisitionsByUserStatus(adquisitionPurchase.getUser_id(),
-//                        "Pendiente");
-//        Date dateCurrent = new Date();
-//        Calendar calendar = Calendar.getInstance();
-//        calendar.setTime(dateCurrent);
-//        int monthCurrent = calendar.get(Calendar.MONTH) + 1;
-//        int dayCurrent = calendar.get(Calendar.DAY_OF_MONTH);
-//        Instant birthDayInstant = user.getBirth_date().toInstant();
-//        ZonedDateTime zonedDateTime = birthDayInstant.atZone(ZoneOffset.UTC);
-////        calendar.setTime(birthDay);
-//        int monthBirthday = zonedDateTime.getMonthValue();
-//        int dayBirthday = zonedDateTime.getDayOfMonth();
-//        pointsTotal = user.getPoints();
-//        // Si ese día cumple años.
-//        if ((monthCurrent == monthBirthday) && (dayCurrent == dayBirthday)) {
-//            pointsTotal += pointsEarnedForBirthday;
-//        }
-//
-//        if (recordsPendienteMainAdquisition.size() > 0) {
-//            if (recordsPendienteMainAdquisition.get(0).getAdquisition_details().size() == 0) {
-//                throw new ResourceNotFoundException("No has añadido productos para comprar.");
-//            }
-//            for (MainAdquisitionModel.AdquisitionDetail adquisitionDetail : recordsPendienteMainAdquisition.get(0).getAdquisition_details()) {
-//                ProductModel product = productService.getProductById(adquisitionDetail.getProduct_id()).
-//                    orElseThrow(() -> new ResourceNotFoundException(String.format("¡Error! No se encontró un " +
-//                            "producto con el Id %s.", adquisitionDetail.getProduct_id())));
-//                int indexDetail =
-//                        recordsPendienteMainAdquisition.get(0).getAdquisition_details().indexOf(adquisitionDetail);
-//                adquisitionDetail.setMoney_unit_value(product.getMoney_unit_price());
-//                adquisitionDetail.setPoint_unit_value(product.getPoint_unit_price());
-//                if (usePoints == true) {
-//                    totalValuePerDetail = adquisitionDetail.getQuantity() * product.getPoint_unit_price();
-//                    if (pointsTotal > 0 && pointsTotal >= totalValuePerDetail) {
-//                        pointsTotal -= totalValuePerDetail;
-//                        pointsUsed += totalValuePerDetail;
-//                    } else {
-//                        moneyUsed += adquisitionDetail.getQuantity() * product.getMoney_unit_price();
-//                    }
-//                } else {
-//                    moneyUsed += adquisitionDetail.getQuantity() * product.getMoney_unit_price();
-//                }
-//                recordsPendienteMainAdquisition.get(0).getAdquisition_details().set(indexDetail, adquisitionDetail);
-//            }
-//            // Modificar puntos con los que quedó finalmente
-//            user.setPoints(pointsTotal);
-//            userService.saveUser(user);
-//            // Modificar datos del Main_Adquisition
-//            recordsPendienteMainAdquisition.get(0).setPoint_total_value(pointsUsed);
-//            recordsPendienteMainAdquisition.get(0).setMoney_total_value(moneyUsed);
-//            recordsPendienteMainAdquisition.get(0).setStatus("Realizada");
-//            // Crear registros de Point_Transaction
-//
-//            return new ResponseEntity<String>("Working progress..", HttpStatus.OK);
-//        } else {
-//            throw new ResourceNotFoundException("¡Error! No tiene productos pendientes por comprar.");
-//        }
-//    }
+
+    @PostMapping("/buy")
+    public ResponseEntity<String> makePurchase(@RequestBody MainAdquisitionPurchaseDTO adquisitionPurchase) {
+        String return_process;
+        Boolean receivedPoinsBirthday = false;
+        int pointsUsed = 0;
+        double moneyUsed = 0;
+        double totalValuePerDetail = 0;
+        int pointsTotal;
+        boolean usePoints = adquisitionPurchase.getUse_points();
+        int pointsEarnedPer300PointsSpent = 40;
+        int pointsEarnedPer30000MoneySpent = 30;
+        int pointsEarnedForBirthday = 500;
+        if ((adquisitionPurchase.getUse_points() == null) || (adquisitionPurchase.getUser_id() == 0)) {
+            throw new ResourceNotFoundException("¡Error! Faltó enviar si usar los puntos o el Id del Usuario");
+        }
+        UserModel user = userService.getUserById(adquisitionPurchase.getUser_id()).
+                orElseThrow(() -> new ResourceNotFoundException(String.format("¡Error! No se ha encontrado el " +
+                        "usuario con el Id %s", adquisitionPurchase.getUser_id())));
+        List<MainAdquisitionModel> recordsPendienteMainAdquisition =
+                mainAdquisitionService.validateAdquisitionsByUserStatus(adquisitionPurchase.getUser_id(),
+                        "Pendiente");
+        Date dateCurrent = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(dateCurrent);
+        int monthCurrent = calendar.get(Calendar.MONTH) + 1;
+        int dayCurrent = calendar.get(Calendar.DAY_OF_MONTH);
+        Instant birthDayInstant = user.getBirth_date().toInstant();
+        ZonedDateTime zonedDateTime = birthDayInstant.atZone(ZoneOffset.UTC);
+//        calendar.setTime(birthDay);
+        int monthBirthday = zonedDateTime.getMonthValue();
+        int dayBirthday = zonedDateTime.getDayOfMonth();
+        pointsTotal = user.getPoints();
+        // Si ese día cumple años.
+        if ((monthCurrent == monthBirthday) && (dayCurrent == dayBirthday)) {
+            receivedPoinsBirthday = true;
+            pointsTotal += pointsEarnedForBirthday;
+        }
+
+        if (recordsPendienteMainAdquisition.size() > 0) {
+            if (recordsPendienteMainAdquisition.get(0).getAdquisition_details().size() == 0) {
+                throw new ResourceNotFoundException("No has añadido productos para comprar.");
+            }
+            List productsBought = new ArrayList<>();
+            for (MainAdquisitionModel.AdquisitionDetail adquisitionDetail : recordsPendienteMainAdquisition.get(0).getAdquisition_details()) {
+                ProductModel product = productService.getProductById(adquisitionDetail.getProduct_id()).
+                    orElseThrow(() -> new ResourceNotFoundException(String.format("¡Error! No se encontró un " +
+                            "producto con el Id %s.", adquisitionDetail.getProduct_id())));
+                if (adquisitionDetail.getQuantity() > product.getQuantity()) {
+                    throw new ResourceExist(String.format("No hay suficiente Stock con el producto %s que tiene %d y " +
+                            "requiere %d.", product.getName(), product.getQuantity(), adquisitionDetail.getQuantity()));
+                }
+                product.setQuantity(product.getQuantity() - adquisitionDetail.getQuantity());
+                int indexDetail =
+                        recordsPendienteMainAdquisition.get(0).getAdquisition_details().indexOf(adquisitionDetail);
+                adquisitionDetail.setMoney_unit_value(product.getMoney_unit_price());
+                adquisitionDetail.setPoint_unit_value(product.getPoint_unit_price());
+                if (usePoints == true) {
+                    totalValuePerDetail = adquisitionDetail.getQuantity() * product.getPoint_unit_price();
+                    if (pointsTotal > 0 && pointsTotal >= totalValuePerDetail) {
+                        pointsTotal -= totalValuePerDetail;
+                        pointsUsed += totalValuePerDetail;
+                    } else {
+                        moneyUsed += adquisitionDetail.getQuantity() * product.getMoney_unit_price();
+                    }
+                } else {
+                    moneyUsed += adquisitionDetail.getQuantity() * product.getMoney_unit_price();
+                }
+                productsBought.add(product);
+                recordsPendienteMainAdquisition.get(0).getAdquisition_details().set(indexDetail, adquisitionDetail);
+            }
+            // Suma de puntos que recibió
+            int pointsSpentToGivePoints = (int) Math.round(pointsUsed / 300) * pointsEarnedPer300PointsSpent;
+            int moneysSpentToGivePoints = (int) Math.round(moneyUsed / 30000) * pointsEarnedPer30000MoneySpent;
+            int pointsTotalToGive = pointsSpentToGivePoints + moneysSpentToGivePoints;
+            // Modificar puntos con los que quedó finalmente
+            user.setPoints(pointsTotal + pointsTotalToGive);
+            userService.saveUser(user);
+            // Modificar datos del Main_Adquisition
+            recordsPendienteMainAdquisition.get(0).setPoint_total_value(pointsUsed);
+            recordsPendienteMainAdquisition.get(0).setMoney_total_value(moneyUsed);
+            recordsPendienteMainAdquisition.get(0).setStatus("Realizada");
+            mainAdquisitionService.saveMainAdquisition(recordsPendienteMainAdquisition.get(0), false, true);
+
+            // ---- Crear registros de Point_Transaction
+            // Objeto Adquisition que guarda Point_Transaction
+            PointTransactionModel.Adquisition adquisitionObject = new PointTransactionModel.Adquisition();
+            adquisitionObject.setMain_adquisition_id(recordsPendienteMainAdquisition.get(0).get_id());
+            adquisitionObject.setUser_id(recordsPendienteMainAdquisition.get(0).getUser_id());
+            adquisitionObject.setTransaction_date(new Date());
+            adquisitionObject.setMain_adquisition_id(recordsPendienteMainAdquisition.get(0).get_id());
+            // Reporte de gasto de puntos por compra
+            PointTransactionModel spentPointsRecord = new PointTransactionModel();
+            int idPointTransactionToAssign = pointTransactionService.getNextId();
+            spentPointsRecord.set_id(idPointTransactionToAssign);
+            spentPointsRecord.setQuantity_point(pointsUsed);
+            spentPointsRecord.setAction("Compra");
+            spentPointsRecord.setAdquisition(adquisitionObject);
+            pointTransactionService.savePointTransaction(spentPointsRecord);
+            if (receivedPoinsBirthday == true) {
+                // Reporte de recepción de puntos por cumpleaños
+                PointTransactionModel birthdayPointsRecord = new PointTransactionModel();
+                idPointTransactionToAssign = pointTransactionService.getNextId();
+                birthdayPointsRecord.set_id(idPointTransactionToAssign);
+                birthdayPointsRecord.setQuantity_point(pointsEarnedForBirthday);
+                birthdayPointsRecord.setAction("Cumpleaños");
+                birthdayPointsRecord.setAdquisition(adquisitionObject);
+                pointTransactionService.savePointTransaction(birthdayPointsRecord);
+            }
+            // Reporte de recepción de puntos por compra
+            PointTransactionModel pointsReceivedRecord = new PointTransactionModel();
+            idPointTransactionToAssign = pointTransactionService.getNextId();
+            pointsReceivedRecord.set_id(idPointTransactionToAssign);
+            pointsReceivedRecord.setQuantity_point(pointsTotalToGive);
+            pointsReceivedRecord.setAction("Recepción");
+            pointsReceivedRecord.setAdquisition(adquisitionObject);
+            pointTransactionService.savePointTransaction(pointsReceivedRecord);
+
+            for (int i = 0; i < productsBought.size(); i++) {
+                ProductModel product = (ProductModel) productsBought.get(i);
+                productService.saveProduct(product);
+            }
+
+            String formatPointsSpent = NumberFormat.getNumberInstance(Locale.US).format(pointsUsed);
+            String formatMoneySpent = NumberFormat.getNumberInstance(Locale.US).format(moneyUsed);
+
+            return new ResponseEntity<String>(String.format("Realizó una compra por %s puntos y %s COP. Muchas " +
+                    "gracias por elegirnos %s %s.", formatPointsSpent, formatMoneySpent, user.getFirst_name(),
+                    user.getLast_name()),
+                    HttpStatus.OK);
+        } else {
+            throw new ResourceNotFoundException("¡Error! No tiene productos pendientes por comprar.");
+        }
+    }
 
 
     public List<MainAdquisitionCompleteDTO> mapMainAdquisitionModelToDTOList(List<MainAdquisitionModel> mainAdquisitions) {

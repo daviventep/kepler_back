@@ -5,6 +5,6 @@ import org.bson.types.ObjectId;
 
 @Data
 public class MainAdquisitionPurchaseDTO {
-    private ObjectId user_id;
+    private int user_id;
     private Boolean use_points;
 }
